@@ -1,9 +1,12 @@
-<mxfile host="app.diagrams.net" modified="2023-04-16T22:15:43.522Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36" version="21.1.8" etag="Fh9heVH0mxjj1Sh-3V4h" type="github">
+<mxfile host="app.diagrams.net" modified="2023-04-16T22:54:02.109Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36" etag="u11THD-rQfyRcntzWPUG" version="21.1.8" type="github">
   <diagram name="Sayfa -1" id="E7HtZyPJfRZDzS7fbvhk">
-    <mxGraphModel>
+    <mxGraphModel dx="1050" dy="541" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="saOmMBJA0pu1n_iTMuZ0-1" value="SE 116 PROJECT MISTI GAME" style="text;html=1;strokeColor=#6F0000;fillColor=#a20025;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="330" height="30" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
