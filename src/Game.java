@@ -22,14 +22,20 @@ public class Game {
 	public Game() {
 
 		startGame();
+		//Check Status
 		for (Player player : players) {
-			System.out.println(player.name + " cards are:");
-			for (int i = 0; i < player.hand.size(); i++) {
-				System.out.print(player.hand.get(i) + ", ");
+			System.out.println(player.getName() + " cards are:");
+			for (int i = 0; i < player.getHand().size(); i++) {
+				System.out.print(player.getHand().get(i) + ", ");
 			}
 			System.out.println();
 			System.out.println("******************");
 		}
+		System.out.println("Board cards are: ");
+		for (int i = 0; i < board.size(); i++) {
+			System.out.print(board.get(i)+", ");
+		}
+		System.out.println("Remained deck cards :"+deck.size());
 	}
 
 	private void startGame() {
@@ -59,7 +65,7 @@ public class Game {
 	private void inputPlayers() {
 
 		while (true) {
-			System.out.println("Do you want to play or not ? \nType:\n'0' for play \n'1' for spectate \n'2' for exit.");
+			System.out.println("What would you like to do ?\nType:\n0 => PLAY \n1 => SPECTATE \n2 => EXIT");
 			playChoice = scanner.nextLine();
 
 			try {
@@ -72,7 +78,7 @@ public class Game {
 
 			switch (Integer.parseInt(playChoice)) {
 			case 0:
-				System.out.println("Game is starting..");
+				System.out.println("Game is starting...");
 				maxBotPlayerNumber = 3;
 				humanPlayer = new HumanPlayer(humanNameInput(), playerHand = new ArrayList<>());
 				players.add(humanPlayer);
@@ -99,9 +105,9 @@ public class Game {
 				"How many bot players do you want in the game (max bot player number is: " + maxBotPlayerNumber + ")");
 		int botPlayersNumberChoice = scanner.nextInt();
 		for (int i = 0; i < botPlayersNumberChoice; i++) {
-			System.out.println("What difficulty level do you want in " + (i + 1) + ". bot ? \nNovice Bot for "
-					+ BotDifficulty.NOVICEBOTLEVEL + "\nRegular Bot for " + BotDifficulty.REGULARBOTLEVEL
-					+ "\nExpert Bot for " + BotDifficulty.EXPERTBOTLEVEL);
+			System.out.println("What difficulty level do you want for " + (i + 1) + ". bot ? \nNovice Bot => "
+					+ BotDifficulty.NOVICEBOTLEVEL + "\nRegular Bot => " + BotDifficulty.REGULARBOTLEVEL
+					+ "\nExpert Bot => " + BotDifficulty.EXPERTBOTLEVEL);
 			int botDifficultyLevelChoice = scanner.nextInt();
 			players.add(addBot(botDifficultyLevelChoice));
 			System.out.println("Bot has been added.");
@@ -112,19 +118,22 @@ public class Game {
 	private BotPlayers addBot(int botDifficultyLevelChoice) {
 		switch (botDifficultyLevelChoice) {
 		case 0:
-			return new NoviceBot("Novice Bot", botHand1 = new ArrayList<>());
+			return new NoviceBot("NOVICE BOT", botHand1 = new ArrayList<>());
 		case 1:
-			return new RegularBot("Regular Bot", botHand2 = new ArrayList<>());
+			return new RegularBot("REGULAR BOT", botHand2 = new ArrayList<>());
 		case 2:
-			return new ExpertBot("Expert Bot", botHand3 = new ArrayList<>());
+			return new ExpertBot("EXPERT BOT", botHand3 = new ArrayList<>());
 		}
 		return null;
 	}
 
 	private String humanNameInput() {
-		System.out.println("Please enter your name: ");
+		System.out.println("Enter Your Name Please: ");
 		String name = scanner.nextLine();
-		System.out.println("Welcome to the game: " + name);
+		StringBuilder sb = new StringBuilder(name);
+		sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+		name = sb.toString();
+		System.out.println("Welcome to Game " + name);
 		return name;
 
 	}
@@ -137,7 +146,7 @@ public class Game {
 
 		for (int i = 0; i < 4; i++) {
 			for (Player player : players) {
-				player.hand.add(deck.get(0));
+				player.getHand().add(deck.get(0));
 				deck.remove(0);
 
 			}

@@ -6,20 +6,4 @@ public class HumanPlayer extends Player {
 		super(name, hand);
 	}
 
-	public ArrayList<Cards> getHand() {
-		return hand;
-	}
-
-	public void setHand(ArrayList<Cards> hand) {
-		this.hand = hand;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 }

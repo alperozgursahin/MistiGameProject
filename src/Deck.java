@@ -7,7 +7,7 @@ public class Deck {
 	public static void cutDeck(ArrayList<Cards> cards) {
 		Random rand = new Random();
 		int cutIndex = rand.nextInt(cards.size());
-		System.out.println("Deck is Cutting");
+		System.out.println("Deck is Cutting...");
 
 		ArrayList<Cards> bottom = new ArrayList<>(cards.subList(0, cutIndex));
 		ArrayList<Cards> top = new ArrayList<>(cards.subList(cutIndex, cards.size()));
@@ -17,7 +17,7 @@ public class Deck {
 	}
 
 	public static void shuffleDeck(ArrayList<Cards> cards) {
-		System.out.println("Deck is shuffling");
+		System.out.println("Deck is Shuffling...");
 		Collections.shuffle(cards);
 
 	}
