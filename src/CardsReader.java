@@ -1,10 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CardsReader {
-
 
 	public CardsReader(Scanner scanner) {
 		System.out.println("Cards Taking...");
@@ -18,7 +16,6 @@ public class CardsReader {
 				System.err.println("Please enter a valid file name!");
 			}
 		} while (scanner == null);
-
 
 		// Read in each line and create a card object with its associated points
 		while (scanner.hasNextLine()) {
@@ -37,6 +34,5 @@ public class CardsReader {
 		String fileName = scanner.nextLine();
 		return fileName;
 	}
-
 
 }
