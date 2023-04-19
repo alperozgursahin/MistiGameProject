@@ -1,12 +1,12 @@
-import java.util.ArrayList;
 
 public abstract class BotPlayers extends Player {
 
 	private int botDifficulty;
 
-	public BotPlayers(String name, ArrayList<Cards> hand, int botDifficulty) {
-		super(name, hand);
+	public BotPlayers(String name, int botDifficulty) {
+		super(name);
 		this.setBotDifficulty(botDifficulty);
+
 	}
 
 	public int getBotDifficulty() {

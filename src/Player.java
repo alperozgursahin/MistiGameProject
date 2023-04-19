@@ -4,10 +4,10 @@ public abstract class Player {
 
 	private String name;
 	private ArrayList<Cards> hand;
-
-	public Player(String name, ArrayList<Cards> hand) {
+	private ArrayList<Cards> collectedCards;
+	
+	public Player(String name) {
 		this.setName(name);
-		this.setHand(hand);
 	}
 
 	public String getName() {
@@ -24,6 +24,14 @@ public abstract class Player {
 
 	public void setHand(ArrayList<Cards> hand) {
 		this.hand = hand;
+	}
+
+	public ArrayList<Cards> getCollectedCards() {
+		return collectedCards;
+	}
+
+	public void setCollectedCards(ArrayList<Cards> collectedCards) {
+		this.collectedCards = collectedCards;
 	}
 
 }

@@ -1,9 +1,7 @@
-import java.util.ArrayList;
-
 public class NoviceBot extends BotPlayers {
 
-	public NoviceBot(String name, ArrayList<Cards> hand) {
-		super(name, hand, BotDifficulty.NOVICEBOTLEVEL);
+	public NoviceBot() {
+		super(BotConstants.NOVICE_BOT_NAME, BotConstants.NOVICE_BOT_LEVEL);
 
 	}
 

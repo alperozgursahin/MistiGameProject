@@ -6,6 +6,10 @@ public class Deck {
 	private static ArrayList<Cards> cards;
 
 	public Deck() {
+		createDeck();
+	}
+
+	private void createDeck() {
 		String[] suits = { "Spades", "Diamonds", "Hearts", "Clubs" };
 		String[] ranks = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 		cards = new ArrayList<Cards>();
@@ -16,7 +20,7 @@ public class Deck {
 			}
 		}
 	}
-
+	
 	public static ArrayList<Cards> getDeck() {
 		return cards;
 	}

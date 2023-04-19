@@ -1,61 +1,108 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Game {
+public class Game implements Misti {
 
-	HumanPlayer humanPlayer;
 	Scanner scanner = new Scanner(System.in);
-	boolean spectatorMode = false;
-	boolean isValid = false;
-	int maxBotPlayerNumber = 3;
-	int minimumBotPlayerNumber = 1;
-	ArrayList<BotPlayers> botPlayers = new ArrayList<>();
 
 	ArrayList<Cards> deck = new ArrayList<>();
 	ArrayList<Cards> board = new ArrayList<>();
 
+	HumanPlayer humanPlayer;
 	ArrayList<Cards> playerHand;
+	ArrayList<Cards> collectedPlayerCards;
+
+	boolean spectatorMode = false;
+	boolean isValid = false;
+
+	BotPlayers[] botPlayers;
+	int maxBotPlayerNumber = 3;
+	int minimumBotPlayerNumber = 1;
+
 	ArrayList<Cards> botHand1;
 	ArrayList<Cards> botHand2;
 	ArrayList<Cards> botHand3;
+	ArrayList<Cards> collectedBot1Cards;
+	ArrayList<Cards> collectedBot2Cards;
+	ArrayList<Cards> collectedBot3Cards;
 
 	public Game() {
 
 		startGame();
-		// Check Status
 
 	}
 
-	private void startGame() {
+	@Override
+	public void startGame() {
 
 		System.out.println("Welcome to the Misti Game!");
-//		new CardsReader(scanner);
 
 		new Deck();
 		deck = Deck.getDeck();
-		// System.out.println("////////////////////////////////////");
 		Deck.shuffleDeck(deck);
-
-		/*
-		 * for (Cards card : deck) { System.out.println(card.getSuit() + card.getRank()
-		 * + ": " + card.getPoint() + " points"); }
-		 * System.out.println("/////////////////////////////////");
-		 */
-
 		Deck.cutDeck(deck);
-		/*
-		 * for (Cards card : deck) { System.out.println(card.getSuit() + card.getRank()
-		 * + ": " + card.getPoint() + " points"); }
-		 */
+
 		inputPlayers();
 		dealCards(botPlayers, humanPlayer, deck);
 		checkBotStatus();
 		checkPlayerStatus(spectatorMode, humanPlayer);
 		checkBoardStatus();
 
+		boolean gameOver = false;
+		int playerNumber = botPlayers.length + checkSpectateMode();
+		int round = roundNumberCalculator(playerNumber);
+
+		while (!gameOver) {
+			while (round > 0) {
+				round--;
+
+				if (!spectatorMode) {
+					System.out.println("The last board card is: " + board.get(board.size() - 1));
+					humanPlayCard();
+					checkBoardStatus();
+
+				} else {
+					System.out.println("spectate döndm");
+				}
+
+			}
+		}
+
 	}
 
-	private void inputPlayers() {
+	@Override
+	public void humanPlayCard() {
+		System.out.println("Your turn!");
+		checkPlayerStatus(spectatorMode, humanPlayer);
+
+		System.out.println("Choose a card to play: ");
+		int playerCardChoice = scanner.nextInt();
+		System.out.println("Throwing: " + humanPlayer.getHand().get(playerCardChoice - 1));
+		board.add(humanPlayer.getHand().get(playerCardChoice - 1));
+		humanPlayer.getHand().remove(playerCardChoice - 1);
+
+	}
+
+	private int roundNumberCalculator(int playerNumber) {
+		if (playerNumber == 4)
+			return 2;
+		else if (playerNumber == 3)
+			return 3;
+		else if (playerNumber == 2)
+			return 6;
+		else
+			return 0;
+	}
+
+	private int checkSpectateMode() {
+		if (spectatorMode)
+			return 0;
+		else
+			return 1;
+	}
+
+	@Override
+	public void inputPlayers() {
 
 		while (!isValid) {
 			System.out.println("What would you like to do ?\nType:\n0 => PLAY \n1 => SPECTATE \n2 => EXIT");
@@ -69,7 +116,9 @@ public class Game {
 					switch (playChoice) {
 					case 0:
 						System.out.println("Game is starting...");
-						humanPlayer = new HumanPlayer(humanNameInput(), playerHand = new ArrayList<>());
+						humanPlayer = new HumanPlayer(humanNameInput());
+						humanPlayer.setHand(playerHand = new ArrayList<Cards>());
+						humanPlayer.setCollectedCards(collectedPlayerCards = new ArrayList<Cards>());
 						// botPlayers.add(humanPlayer);
 						inputBotLevel();
 						break;
@@ -94,7 +143,8 @@ public class Game {
 
 	}
 
-	private void inputBotLevel() {
+	@Override
+	public void inputBotLevel() {
 		int botCounter = 0;
 		System.out.println(
 				"How many bot players do you want in the game (max bot player number is: " + maxBotPlayerNumber + ")");
@@ -108,10 +158,12 @@ public class Game {
 					System.out.println("Please enter a valid value!");
 				} else {
 					isValid = true;
+					botPlayers = new BotPlayers[botPlayersNumberChoice];
 					for (int i = 0; i < botPlayersNumberChoice; i++) {
-						System.out.println("What difficulty level do you want for " + (i + 1)
-								+ ". bot ? \nNovice Bot => " + BotDifficulty.NOVICEBOTLEVEL + "\nRegular Bot => "
-								+ BotDifficulty.REGULARBOTLEVEL + "\nExpert Bot => " + BotDifficulty.EXPERTBOTLEVEL);
+						System.out.println("What difficulty level do you want for " + (i + 1) + ". bot ? \n"
+								+ BotConstants.NOVICE_BOT_NAME + " => " + BotConstants.NOVICE_BOT_LEVEL + "\n"
+								+ BotConstants.REGULAR_BOT_NAME + " => " + BotConstants.REGULAR_BOT_LEVEL + "\n"
+								+ BotConstants.EXPERT_BOT_NAME + " => " + BotConstants.EXPERT_BOT_LEVEL);
 						boolean flag = false;
 						while (!flag) {
 							try {
@@ -121,8 +173,9 @@ public class Game {
 									System.out.println("Please enter a valid value!");
 								} else {
 									flag = true;
-									botPlayers.add(addBot(botDifficultyLevelChoice));
-									System.out.println(botPlayers.get(botCounter++).getName() + " has been added.");
+									addBot(botDifficultyLevelChoice, botCounter);
+									System.out.println(botPlayers[botCounter++].getName() + " has been added.");
+
 								}
 
 							} catch (Exception e) {
@@ -139,16 +192,89 @@ public class Game {
 
 	}
 
-	private BotPlayers addBot(int botDifficultyLevelChoice) {
+	@Override
+	public void addBot(int botDifficultyLevelChoice, int botCounter) {
 		switch (botDifficultyLevelChoice) {
-		case 0:
-			return new NoviceBot("NOVICE BOT", botHand1 = new ArrayList<>());
-		case 1:
-			return new RegularBot("REGULAR BOT", botHand2 = new ArrayList<>());
-		case 2:
-			return new ExpertBot("EXPERT BOT", botHand3 = new ArrayList<>());
+		case BotConstants.NOVICE_BOT_LEVEL:
+			BotPlayers noviceBot = new NoviceBot();
+			noviceBot.setHand(botHand1 = new ArrayList<Cards>());
+			noviceBot.setCollectedCards(collectedBot1Cards = new ArrayList<Cards>());
+			botPlayers[botCounter] = noviceBot;
+			break;
+
+		case BotConstants.REGULAR_BOT_LEVEL:
+			BotPlayers regularBot = new RegularBot();
+			regularBot.setHand(botHand2 = new ArrayList<Cards>());
+			regularBot.setCollectedCards(collectedBot2Cards = new ArrayList<Cards>());
+			botPlayers[botCounter] = regularBot;
+			break;
+
+		case BotConstants.EXPERT_BOT_LEVEL:
+			BotPlayers expertBot = new ExpertBot();
+			expertBot.setHand(botHand3 = new ArrayList<Cards>());
+			expertBot.setCollectedCards(collectedBot3Cards = new ArrayList<Cards>());
+			botPlayers[botCounter] = expertBot;
+			break;
+
 		}
-		return null;
+
+	}
+
+	@Override
+	public void dealCards(BotPlayers[] botPlayers, HumanPlayer humanPlayer, ArrayList<Cards> deck) {
+
+		for (int i = 0; i < 4; i++) {
+			board.add(deck.get(0));
+			deck.remove(0);
+		}
+
+		for (int i = 0; i < 4; i++) {
+			if (!spectatorMode) {
+				humanPlayer.getHand().add(deck.get(0));
+				deck.remove(0);
+			}
+			for (BotPlayers botPlayer : botPlayers) {
+				botPlayer.getHand().add(deck.get(0));
+
+				deck.remove(0);
+
+			}
+
+		}
+
+	}
+
+	@Override
+	public void checkPlayerStatus(boolean spectatorMode, HumanPlayer humanPlayer) {
+		if (!spectatorMode) {
+			System.out.println(humanPlayer.getName() + " Cards are: ");
+			for (int i = 0; i < humanPlayer.getHand().size(); i++) {
+				System.out.print((i + 1) + ") " + humanPlayer.getHand().get(i) + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	@Override
+	public void checkBotStatus() {
+		for (BotPlayers botPlayer : botPlayers) {
+			System.out.println(botPlayer.getName() + " cards are:");
+			for (int i = 0; i < botPlayer.getHand().size(); i++) {
+				System.out.print(botPlayer.getHand().get(i) + ", ");
+			}
+			System.out.println();
+			System.out.println("******************");
+		}
+	}
+
+	@Override
+	public void checkBoardStatus() {
+		System.out.println();
+		System.out.println("Board cards are: ");
+		for (int i = 0; i < board.size(); i++) {
+			System.out.print(board.get(i) + ", ");
+		}
+		System.out.println("Remained deck cards :" + deck.size());
 	}
 
 	private String humanNameInput() {
@@ -160,55 +286,6 @@ public class Game {
 		System.out.println("Welcome to Game " + name);
 		return name;
 
-	}
-
-	private void dealCards(ArrayList<BotPlayers> botPlayers, HumanPlayer humanPlayer, ArrayList<Cards> deck) {
-		for (int i = 0; i < 4; i++) {
-			board.add(deck.get(0));
-			deck.remove(0);
-		}
-
-		for (int i = 0; i < 4; i++) {
-			for (BotPlayers player : botPlayers) {
-				player.getHand().add(deck.get(0));
-				deck.remove(0);
-
-			}
-			if (!spectatorMode) {
-				humanPlayer.getHand().add(deck.get(0));
-				deck.remove(0);
-			}
-
-		}
-
-	}
-
-	private void checkPlayerStatus(boolean spectatorMode, HumanPlayer humanPlayer) {
-		if (!spectatorMode) {
-			System.out.println(humanPlayer.getName() + " Cards are: ");
-			for (int i = 0; i < humanPlayer.getHand().size(); i++) {
-				System.out.print(humanPlayer.getHand().get(i) + ", ");
-			}
-		}
-	}
-
-	private void checkBotStatus() {
-		for (BotPlayers botPlayer : botPlayers) {
-			System.out.println(botPlayer.getName() + " cards are:");
-			for (int i = 0; i < botPlayer.getHand().size(); i++) {
-				System.out.print(botPlayer.getHand().get(i) + ", ");
-			}
-			System.out.println();
-			System.out.println("******************");
-		}
-	}
-
-	private void checkBoardStatus() {
-		System.out.println("Board cards are: ");
-		for (int i = 0; i < board.size(); i++) {
-			System.out.print(board.get(i) + ", ");
-		}
-		System.out.println("Remained deck cards :" + deck.size());
 	}
 
 }

@@ -1,9 +1,7 @@
-import java.util.ArrayList;
-
 public class RegularBot extends BotPlayers {
 
-	public RegularBot(String name, ArrayList<Cards> hand) {
-		super(name, hand, BotDifficulty.REGULARBOTLEVEL);
+	public RegularBot() {
+		super(BotConstants.REGULAR_BOT_NAME, BotConstants.REGULAR_BOT_LEVEL);
 
 	}
 
