@@ -8,6 +8,7 @@ public class Cards {
 		this.suit = suit;
 		this.rank = rank;
 		this.point = point;
+		
 	}
 
 	public String getSuit() {

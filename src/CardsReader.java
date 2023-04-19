@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 public class CardsReader {
 
-	private static ArrayList<Cards> cards;
 
 	public CardsReader(Scanner scanner) {
 		System.out.println("Cards Taking...");
@@ -20,8 +19,6 @@ public class CardsReader {
 			}
 		} while (scanner == null);
 
-		// Create ArrayList to hold cards
-		cards = new ArrayList<>();
 
 		// Read in each line and create a card object with its associated points
 		while (scanner.hasNextLine()) {
@@ -31,15 +28,8 @@ public class CardsReader {
 			String rank = parts[1];
 			int points = Integer.parseInt(parts[2]);
 
-			Cards card = new Cards(suit, rank, points);
-			cards.add(card);
 		}
 
-		// Print out the cards with their associated points
-		/*
-		 * for (Cards card : cards) { System.out.println(card.getSuit() + card.getRank()
-		 * + ": " + card.getPoint() + " points"); }
-		 */
 	}
 
 	private String fileInput(Scanner scanner) {
@@ -48,12 +38,5 @@ public class CardsReader {
 		return fileName;
 	}
 
-	public static ArrayList<Cards> getCards() {
-		return cards;
-	}
-
-	public void setCards(ArrayList<Cards> cards) {
-		CardsReader.cards = cards;
-	}
 
 }

@@ -4,9 +4,9 @@ import java.util.Scanner;
 public class Game {
 
 	HumanPlayer humanPlayer;
-	String playChoice;
 	Scanner scanner = new Scanner(System.in);
 	boolean spectatorMode = false;
+	boolean isValid = false;
 	int maxBotPlayerNumber = 0;
 	// ArrayList<BotPlayers> botPlayers = new ArrayList<>();
 	ArrayList<Player> players = new ArrayList<>();
@@ -41,8 +41,9 @@ public class Game {
 	private void startGame() {
 
 		System.out.println("Welcome to the Misti Game!");
-		new CardsReader(scanner);
-		deck = CardsReader.getCards();
+//		new CardsReader(scanner);
+		new Deck();
+		deck = Deck.getDeck();
 		// System.out.println("////////////////////////////////////");
 		Deck.shuffleDeck(deck);
 
@@ -64,37 +65,38 @@ public class Game {
 
 	private void inputPlayers() {
 
-		while (true) {
+		while (!isValid) {
 			System.out.println("What would you like to do ?\nType:\n0 => PLAY \n1 => SPECTATE \n2 => EXIT");
-			playChoice = scanner.nextLine();
-
 			try {
-				Integer.parseInt(playChoice);
-
+				int playChoice = Integer.parseInt(scanner.nextLine());
+				if(playChoice < 0 || playChoice > 2) {
+					isValid = false;
+					System.out.println("Please enter a valid value!");
+				} else {
+					isValid = true;
+					switch (playChoice) {
+					case 0:
+						System.out.println("Game is starting...");
+						maxBotPlayerNumber = 3;
+						humanPlayer = new HumanPlayer(humanNameInput(), playerHand = new ArrayList<>());
+						players.add(humanPlayer);
+						inputBotLevel();
+						break;
+					case 1:
+						System.out.println("Spectator Mode on.");
+						maxBotPlayerNumber = 4;
+						spectatorMode = true;
+						inputBotLevel();
+						break;
+					case 2:
+						System.out.println("GoodByee!");
+						break;
+					}
+				}
+				
 			} catch (Exception e) {
 				System.err.println("Please enter a valid value!");
-
 			}
-
-			switch (Integer.parseInt(playChoice)) {
-			case 0:
-				System.out.println("Game is starting...");
-				maxBotPlayerNumber = 3;
-				humanPlayer = new HumanPlayer(humanNameInput(), playerHand = new ArrayList<>());
-				players.add(humanPlayer);
-				inputBotLevel();
-				break;
-			case 1:
-				System.out.println("Spectator Mode on.");
-				maxBotPlayerNumber = 4;
-				spectatorMode = true;
-				inputBotLevel();
-				break;
-			case 2:
-				System.out.println("GoodByee!");
-				break;
-			}
-			break;
 
 		}
 
@@ -103,16 +105,44 @@ public class Game {
 	private void inputBotLevel() {
 		System.out.println(
 				"How many bot players do you want in the game (max bot player number is: " + maxBotPlayerNumber + ")");
-		int botPlayersNumberChoice = scanner.nextInt();
-		for (int i = 0; i < botPlayersNumberChoice; i++) {
-			System.out.println("What difficulty level do you want for " + (i + 1) + ". bot ? \nNovice Bot => "
-					+ BotDifficulty.NOVICEBOTLEVEL + "\nRegular Bot => " + BotDifficulty.REGULARBOTLEVEL
-					+ "\nExpert Bot => " + BotDifficulty.EXPERTBOTLEVEL);
-			int botDifficultyLevelChoice = scanner.nextInt();
-			players.add(addBot(botDifficultyLevelChoice));
-			System.out.println("Bot has been added.");
-
+		isValid = false;
+		while(!isValid) {
+			try {
+				int botPlayersNumberChoice = Integer.parseInt(scanner.nextLine());
+				if(botPlayersNumberChoice < 0 || botPlayersNumberChoice > 2) {
+					isValid = false;
+					System.out.println("Please enter a valid value!");
+				} else {
+					isValid = true;
+					for (int i = 0; i < botPlayersNumberChoice; i++) {
+						System.out.println("What difficulty level do you want for " + (i + 1) + ". bot ? \nNovice Bot => "
+								+ BotDifficulty.NOVICEBOTLEVEL + "\nRegular Bot => " + BotDifficulty.REGULARBOTLEVEL
+								+ "\nExpert Bot => " + BotDifficulty.EXPERTBOTLEVEL);
+						boolean flag = false;
+						while(!flag) {
+							try {
+								int botDifficultyLevelChoice = Integer.parseInt(scanner.nextLine());
+								if(botDifficultyLevelChoice < 0 || botDifficultyLevelChoice > 2) {
+									flag = false;
+									System.out.println("Please enter a valid value!");
+								} else {
+									flag = true;
+									players.add(addBot(botDifficultyLevelChoice));
+									System.out.println("Bot has been added.");
+								}
+								
+							} catch(Exception e) {
+								System.err.println("Please enter a valid value!");
+							}
+						}					
+					}
+				}
+				
+			} catch (Exception e) {
+				System.err.println("Please enter a valid value!");
+			}
 		}
+		
 	}
 
 	private BotPlayers addBot(int botDifficultyLevelChoice) {
