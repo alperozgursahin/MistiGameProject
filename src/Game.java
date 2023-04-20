@@ -34,13 +34,13 @@ public class Game implements Misti {
 		Deck.cutDeck(deck);
 
 		inputPlayers();
-		dealCards(botPlayers, humanPlayer, deck);
+		dealCards();
 		checkBotStatus();
-		checkPlayerStatus(spectatorMode, humanPlayer);
+		checkPlayerStatus();
 		checkBoardStatus();
 
 		boolean gameOver = false;
-		int playerNumber = botPlayers.length + checkSpectateMode();
+		int playerNumber = botPlayers.length + isHumanPlayerIn();
 		int round = roundNumberCalculator(playerNumber);
 
 		while (!gameOver) {
@@ -64,7 +64,7 @@ public class Game implements Misti {
 	@Override
 	public void humanPlayCard() {
 		System.out.println("Your turn!");
-		checkPlayerStatus(spectatorMode, humanPlayer);
+		checkPlayerStatus();
 
 		System.out.println("Choose a card to play: ");
 		int playerCardChoice = scanner.nextInt();
@@ -85,7 +85,7 @@ public class Game implements Misti {
 			return 0;
 	}
 
-	private int checkSpectateMode() {
+	private int isHumanPlayerIn() {
 		if (spectatorMode)
 			return 0;
 		else
@@ -202,13 +202,12 @@ public class Game implements Misti {
 	}
 
 	@Override
-	public void dealCards(BotPlayers[] botPlayers, HumanPlayer humanPlayer, ArrayList<Cards> deck) {
+	public void dealCards() {
 
 		for (int i = 0; i < 4; i++) {
 			board.add(deck.get(0));
 			deck.remove(0);
 		}
-
 		for (int i = 0; i < 4; i++) {
 			if (!spectatorMode) {
 				humanPlayer.getHand().add(deck.get(0));
@@ -216,17 +215,14 @@ public class Game implements Misti {
 			}
 			for (BotPlayers botPlayer : botPlayers) {
 				botPlayer.getHand().add(deck.get(0));
-
 				deck.remove(0);
 
 			}
-
 		}
-
 	}
 
 	@Override
-	public void checkPlayerStatus(boolean spectatorMode, HumanPlayer humanPlayer) {
+	public void checkPlayerStatus() {
 		if (!spectatorMode) {
 			System.out.println(humanPlayer.getName() + " Cards are: ");
 			for (int i = 0; i < humanPlayer.getHand().size(); i++) {
@@ -266,7 +262,5 @@ public class Game implements Misti {
 		name = sb.toString();
 		System.out.println("Welcome to Game " + name);
 		return name;
-
 	}
-
 }

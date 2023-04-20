@@ -8,9 +8,9 @@ public interface Misti {
 	
 	void checkBotStatus();
 	
-	void checkPlayerStatus(boolean spectatorMode, HumanPlayer humanPlayer);
+	void checkPlayerStatus();
 	
-	void dealCards(BotPlayers[] botPlayers, HumanPlayer humanPlayer, ArrayList<Cards> deck);
+	void dealCards();
 	
 	void checkBoardStatus();
 	
