@@ -1,3 +1,4 @@
+
 public class NoviceBot extends BotPlayers {
 
 	public NoviceBot() {

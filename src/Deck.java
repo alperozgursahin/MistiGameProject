@@ -20,7 +20,7 @@ public class Deck {
 			}
 		}
 	}
-	
+
 	public static ArrayList<Cards> getDeck() {
 		return cards;
 	}

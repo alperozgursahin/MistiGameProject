@@ -19,13 +19,6 @@ public class Game implements Misti {
 	int maxBotPlayerNumber = 3;
 	int minimumBotPlayerNumber = 1;
 
-	ArrayList<Cards> botHand1;
-	ArrayList<Cards> botHand2;
-	ArrayList<Cards> botHand3;
-	ArrayList<Cards> collectedBot1Cards;
-	ArrayList<Cards> collectedBot2Cards;
-	ArrayList<Cards> collectedBot3Cards;
-
 	public Game() {
 
 		startGame();
@@ -85,9 +78,9 @@ public class Game implements Misti {
 
 	private int roundNumberCalculator(int playerNumber) {
 		if (playerNumber == 4)
-			return 2;
-		else if (playerNumber == 3)
 			return 3;
+		else if (playerNumber == 3)
+			return 4;
 		else if (playerNumber == 2)
 			return 6;
 		else
@@ -117,7 +110,7 @@ public class Game implements Misti {
 					case 0:
 						System.out.println("Game is starting...");
 						humanPlayer = new HumanPlayer(humanNameInput());
-						humanPlayer.setHand(playerHand = new ArrayList<Cards>());
+						// humanPlayer.setHand(playerHand = new ArrayList<Cards>());
 						humanPlayer.setCollectedCards(collectedPlayerCards = new ArrayList<Cards>());
 						// botPlayers.add(humanPlayer);
 						inputBotLevel();
@@ -197,22 +190,16 @@ public class Game implements Misti {
 		switch (botDifficultyLevelChoice) {
 		case BotConstants.NOVICE_BOT_LEVEL:
 			BotPlayers noviceBot = new NoviceBot();
-			noviceBot.setHand(botHand1 = new ArrayList<Cards>());
-			noviceBot.setCollectedCards(collectedBot1Cards = new ArrayList<Cards>());
 			botPlayers[botCounter] = noviceBot;
 			break;
 
 		case BotConstants.REGULAR_BOT_LEVEL:
 			BotPlayers regularBot = new RegularBot();
-			regularBot.setHand(botHand2 = new ArrayList<Cards>());
-			regularBot.setCollectedCards(collectedBot2Cards = new ArrayList<Cards>());
 			botPlayers[botCounter] = regularBot;
 			break;
 
 		case BotConstants.EXPERT_BOT_LEVEL:
 			BotPlayers expertBot = new ExpertBot();
-			expertBot.setHand(botHand3 = new ArrayList<Cards>());
-			expertBot.setCollectedCards(collectedBot3Cards = new ArrayList<Cards>());
 			botPlayers[botCounter] = expertBot;
 			break;
 
