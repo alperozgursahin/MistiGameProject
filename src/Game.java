@@ -9,15 +9,13 @@ public class Game implements Misti {
 	ArrayList<Cards> board = new ArrayList<>();
 
 	HumanPlayer humanPlayer;
-	ArrayList<Cards> playerHand;
-	ArrayList<Cards> collectedPlayerCards;
-
 	boolean spectatorMode = false;
 	boolean isValid = false;
 
 	BotPlayers[] botPlayers;
 	int maxBotPlayerNumber = 3;
 	int minimumBotPlayerNumber = 1;
+	int botPlayerNumber = 0;
 
 	public Game() {
 
@@ -110,9 +108,6 @@ public class Game implements Misti {
 					case 0:
 						System.out.println("Game is starting...");
 						humanPlayer = new HumanPlayer(humanNameInput());
-						// humanPlayer.setHand(playerHand = new ArrayList<Cards>());
-						humanPlayer.setCollectedCards(collectedPlayerCards = new ArrayList<Cards>());
-						// botPlayers.add(humanPlayer);
 						inputBotLevel();
 						break;
 					case 1:
@@ -138,7 +133,6 @@ public class Game implements Misti {
 
 	@Override
 	public void inputBotLevel() {
-		int botCounter = 0;
 		System.out.println(
 				"How many bot players do you want in the game (max bot player number is: " + maxBotPlayerNumber + ")");
 		isValid = false;
@@ -166,8 +160,8 @@ public class Game implements Misti {
 									System.out.println("Please enter a valid value!");
 								} else {
 									flag = true;
-									addBot(botDifficultyLevelChoice, botCounter);
-									System.out.println(botPlayers[botCounter++].getName() + " has been added.");
+									addBot(botDifficultyLevelChoice);
+									System.out.println(botPlayers[botPlayerNumber++].getName() + " has been added.");
 
 								}
 
@@ -186,21 +180,21 @@ public class Game implements Misti {
 	}
 
 	@Override
-	public void addBot(int botDifficultyLevelChoice, int botCounter) {
+	public void addBot(int botDifficultyLevelChoice) {
 		switch (botDifficultyLevelChoice) {
 		case BotConstants.NOVICE_BOT_LEVEL:
 			BotPlayers noviceBot = new NoviceBot();
-			botPlayers[botCounter] = noviceBot;
+			botPlayers[botPlayerNumber] = noviceBot;
 			break;
 
 		case BotConstants.REGULAR_BOT_LEVEL:
 			BotPlayers regularBot = new RegularBot();
-			botPlayers[botCounter] = regularBot;
+			botPlayers[botPlayerNumber] = regularBot;
 			break;
 
 		case BotConstants.EXPERT_BOT_LEVEL:
 			BotPlayers expertBot = new ExpertBot();
-			botPlayers[botCounter] = expertBot;
+			botPlayers[botPlayerNumber] = expertBot;
 			break;
 
 		}

@@ -16,7 +16,7 @@ public interface Misti {
 	
 	void inputBotLevel();
 	
-	void addBot(int botDifficultyLevelChoice, int botCounter);
+	void addBot(int botDifficultyLevelChoice);
 	
 	void humanPlayCard();
 	
