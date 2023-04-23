@@ -1,10 +1,11 @@
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Game implements Misti {
 
 	Scanner scanner = new Scanner(System.in);
-
+	Random random = new Random();
 	ArrayList<Cards> deck = new ArrayList<>();
 	ArrayList<Cards> board = new ArrayList<>();
 
@@ -35,9 +36,9 @@ public class Game implements Misti {
 
 		inputPlayers();
 		dealCards();
-		checkBotStatus();
-		checkPlayerStatus();
-		checkBoardStatus();
+//		checkBotStatus();
+//		checkPlayerStatus();
+//		checkBoardStatus();
 
 		boolean gameOver = false;
 		int playerNumber = botPlayers.length + isHumanPlayerIn();
@@ -48,12 +49,17 @@ public class Game implements Misti {
 				round--;
 
 				if (!spectatorMode) {
-					System.out.println("The last board card is: " + board.get(board.size() - 1));
-					humanPlayCard();
 					checkBoardStatus();
+					humanPlayCard();
+					for (BotPlayers botPlayer : botPlayers) {
+						checkBoardStatus();
+						if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL) {
+							noviceBotPlayCard(botPlayer);
+						}
+					}
 
 				} else {
-					System.out.println("spectate dÃ¶ndm");
+					System.out.println("spectate döndm");
 				}
 
 			}
@@ -61,17 +67,87 @@ public class Game implements Misti {
 
 	}
 
+	public void noviceBotPlayCard(BotPlayers noviceBot) {
+		System.out.println(noviceBot.getName() + "'s turn!");
+
+		System.out.println(noviceBot.getName() + "'s cards are:");
+		for (int i = 0; i < noviceBot.getHand().size(); i++) {
+			System.out.print((i + 1) + ") " + noviceBot.getHand().get(i) + ", ");
+		}
+		System.out.println();
+
+		int noviceBotCardChoice = random.nextInt(noviceBot.getHand().size()) + 1;
+		Cards playedCard = noviceBot.getHand().get(noviceBotCardChoice - 1);
+		System.out.println(noviceBot.getName() + " is playing: " + playedCard);
+		board.add(playedCard);
+		noviceBot.getHand().remove(noviceBotCardChoice - 1);
+		compare(playedCard, noviceBot);
+
+	}
+
+	public void compare(Cards playedCard, BotPlayers botPlayer) {
+		if (board.size() != 1) {
+			if (playedCard.getRank().equalsIgnoreCase(board.get(board.size() - 2).getRank())
+					|| playedCard.getRank().equalsIgnoreCase("J")) {
+				if (board.size() == 2) {
+					System.out.println(botPlayer.getName() + " made a Misti!");
+					int newMistiNumber = botPlayer.getMistiNumber() + 1;
+					botPlayer.setMistiNumber(newMistiNumber);
+				} else {
+					System.out.println("Collecting cards on board...");
+					botPlayer.getCollectedCards().addAll(board);
+					board.clear();
+				}
+			}
+		}
+
+	}
+
 	@Override
 	public void humanPlayCard() {
+		boolean validPlayerInput = false;
 		System.out.println("Your turn!");
 		checkPlayerStatus();
 
 		System.out.println("Choose a card to play: ");
-		int playerCardChoice = scanner.nextInt();
-		System.out.println("Throwing: " + humanPlayer.getHand().get(playerCardChoice - 1));
-		board.add(humanPlayer.getHand().get(playerCardChoice - 1));
-		humanPlayer.getHand().remove(playerCardChoice - 1);
+		int playerCardChoice = -1;
+		while (!validPlayerInput) {
+			try {
+				playerCardChoice = Integer.parseInt(scanner.nextLine());
+				if (playerCardChoice < 1 || playerCardChoice > 4) {
+					validPlayerInput = false;
+					System.out.println("Please enter a valid value!");
+				} else {
+					validPlayerInput = true;
+				}
 
+			} catch (Exception e) {
+				System.err.println("Please enter a valid value!");
+			}
+		}
+		Cards playedCard = humanPlayer.getHand().get(playerCardChoice - 1);
+		System.out.println("Playing: " + playedCard);
+		board.add(playedCard);
+		humanPlayer.getHand().remove(playerCardChoice - 1);
+		compare(playedCard, humanPlayer);
+
+	}
+	
+	public void compare(Cards playedCard, HumanPlayer humanPlayer) {
+		if (board.size() != 1) {
+			if (playedCard.getRank().equalsIgnoreCase(board.get(board.size() - 2).getRank())
+					|| playedCard.getRank().equalsIgnoreCase("J")) {
+				if (board.size() == 2) {
+					System.out.println(humanPlayer.getName() + " made a Misti!");
+					int newMistiNumber = humanPlayer.getMistiNumber() + 1;
+					humanPlayer.setMistiNumber(newMistiNumber);
+				} else {
+					System.out.println("Collecting cards on board...");
+					humanPlayer.getCollectedCards().addAll(board);
+					board.clear();
+				}
+			}
+		}
 	}
 
 	private int roundNumberCalculator(int playerNumber) {
@@ -251,7 +327,9 @@ public class Game implements Misti {
 		for (int i = 0; i < board.size(); i++) {
 			System.out.print(board.get(i) + ", ");
 		}
+		Cards lastCard = board.isEmpty() ? null : board.get(board.size() - 1);
 		System.out.println("Remained deck cards :" + deck.size());
+		System.out.println("The last board card is: " + lastCard);
 	}
 
 	private String humanNameInput() {
