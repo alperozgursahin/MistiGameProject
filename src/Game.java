@@ -47,28 +47,44 @@ public class Game implements Misti {
 			round = roundNumberCalculator(playerNumber);
 			dealCardsToBoard();
 		}
+		int insideRound;
 
 		while (!gameOver) {
 			while (round > 0) {
-				dealCardsToPlayers();
 				round--;
+				insideRound = 4;
+				dealCardsToPlayers();
+				while (insideRound > 0) {
+					insideRound--;
 
-				if (!spectatorMode) {
-					checkBoardStatus();
-					humanPlayCard();
-					for (BotPlayers botPlayer : botPlayers) {
+					if (!spectatorMode) {
 						checkBoardStatus();
-						if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
-							noviceBotPlayCard(botPlayer);
-						else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
-							regularBotPlayCard(botPlayer);
-						else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
-							expertBotPlayCard(botPlayer);
+						humanPlayCard();
+						for (BotPlayers botPlayer : botPlayers) {
+							checkBoardStatus();
+							if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
+								noviceBotPlayCard(botPlayer);
+							else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
+								regularBotPlayCard(botPlayer);
+							else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
+								expertBotPlayCard(botPlayer);
 
+						}
+
+					} else {
+						System.out.println("spectate döndüm");
+						checkBoardStatus();
+						humanPlayCard();
+						for (BotPlayers botPlayer : botPlayers) {
+							checkBoardStatus();
+							if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
+								noviceBotPlayCard(botPlayer);
+							else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
+								regularBotPlayCard(botPlayer);
+							else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
+								expertBotPlayCard(botPlayer);
+						}
 					}
-
-				} else {
-					System.out.println("spectate döndüm");
 				}
 
 			}
