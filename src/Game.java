@@ -15,7 +15,7 @@ public class Game implements Misti {
 	boolean gameOver;
 
 	BotPlayers[] botPlayers;
-	int maxBotPlayerNumber = 3;
+	int maximumBotPlayerNumber = 3;
 	int minimumBotPlayerNumber = 1;
 	int botPlayerNumber = 0;
 	int playerNumber;
@@ -39,23 +39,20 @@ public class Game implements Misti {
 
 		inputPlayers();
 
-//		checkBotStatus();
-//		checkPlayerStatus();
-//		checkBoardStatus();
 		if (!gameOver) {
 			playerNumber = botPlayers.length + isHumanPlayerIn();
 			round = roundNumberCalculator(playerNumber);
 			dealCardsToBoard();
 		}
-		int insideRound;
+		int turn;
 
 		while (!gameOver) {
 			while (round > 0) {
 				round--;
-				insideRound = 4;
+				turn = 4;
 				dealCardsToPlayers();
-				while (insideRound > 0) {
-					insideRound--;
+				while (turn > 0) {
+					turn--;
 
 					if (!spectatorMode) {
 						checkBoardStatus();
@@ -92,25 +89,17 @@ public class Game implements Misti {
 
 	}
 
-	private void expertBotPlayCard(BotPlayers botPlayer) {
-		// TODO Auto-generated method stub
-
+	private void expertBotPlayCard(BotPlayers expertBot) {
+		getBotHand(expertBot);
 	}
 
-	private void regularBotPlayCard(BotPlayers botPlayer) {
-		// TODO Auto-generated method stub
+	private void regularBotPlayCard(BotPlayers regularBot) {
+		getBotHand(regularBot);
 
 	}
 
 	private void noviceBotPlayCard(BotPlayers noviceBot) {
-		System.out.println(noviceBot.getName() + "'s turn!");
-		System.out.println(noviceBot.getName() + "'s cards are:");
-
-		for (int i = 0; i < noviceBot.getHand().size(); i++) {
-			System.out.print((i + 1) + ") " + noviceBot.getHand().get(i) + ", ");
-		}
-
-		System.out.println();
+		getBotHand(noviceBot);
 
 		int noviceBotCardChoice = random.nextInt(noviceBot.getHand().size()) + 1;
 		Cards playedCard = noviceBot.getHand().get(noviceBotCardChoice - 1);
@@ -119,6 +108,17 @@ public class Game implements Misti {
 		noviceBot.getHand().remove(noviceBotCardChoice - 1);
 		compare(playedCard, noviceBot);
 
+	}
+
+	private void getBotHand(BotPlayers botPlayer) {
+		System.out.println(botPlayer.getName() + "'s turn!");
+		System.out.println(botPlayer.getName() + "'s cards are:");
+
+		for (int i = 0; i < botPlayer.getHand().size(); i++) {
+			System.out.print((i + 1) + ") " + botPlayer.getHand().get(i) + ", ");
+		}
+
+		System.out.println();
 	}
 
 	private void compare(Cards playedCard, BotPlayers botPlayer) {
@@ -164,20 +164,19 @@ public class Game implements Misti {
 
 		System.out.println("Choose a card to play: ");
 		int playerCardChoice = -1;
-		while (!validPlayerInput) {
+		do {
 			try {
 				playerCardChoice = Integer.parseInt(scanner.nextLine());
-				if (playerCardChoice < 1 || playerCardChoice > 4) {
-					validPlayerInput = false;
+				if (!String.valueOf(playerCardChoice).matches("[1-4]"))
 					System.out.println("Please enter a valid value!");
-				} else {
+				else
 					validPlayerInput = true;
-				}
 
 			} catch (Exception e) {
 				System.err.println("Please enter a valid value!");
 			}
-		}
+		} while (!validPlayerInput);
+
 		Cards playedCard = humanPlayer.getHand().get(playerCardChoice - 1);
 		System.out.println("Playing: " + playedCard);
 		board.add(playedCard);
@@ -207,54 +206,48 @@ public class Game implements Misti {
 	@Override
 	public void inputPlayers() {
 
-		while (!isValid) {
-			System.out.println("What would you like to do ?\nType:\n0 => PLAY \n1 => SPECTATE \n2 => EXIT");
+		do {
+			System.out.println("What would you like to do?\nType:\n0 => PLAY\n1 => SPECTATE\n2 => EXIT");
 			try {
 				int playChoice = Integer.parseInt(scanner.nextLine());
-				if (playChoice < 0 || playChoice > 2) {
-					isValid = false;
-					System.out.println("Please enter a valid value!");
-				} else {
-					isValid = true;
-					switch (playChoice) {
-					case 0:
-						System.out.println("Game is starting...");
-						humanPlayer = new HumanPlayer(humanNameInput());
-						inputBotLevel();
-						break;
-					case 1:
-						System.out.println("Spectator Mode on.");
-						maxBotPlayerNumber = 4;
-						minimumBotPlayerNumber = 2;
-						spectatorMode = true;
-						inputBotLevel();
-						break;
-					case 2:
-						System.out.println("GoodByee!");
-						gameOver = true;
-						break;
-					}
+				switch (playChoice) {
+				case 0:
+					System.out.println("Game is starting...");
+					humanPlayer = new HumanPlayer(humanNameInput());
+					inputBotLevel();
+					break;
+				case 1:
+					System.out.println("Spectator Mode on.");
+					maximumBotPlayerNumber = 4;
+					minimumBotPlayerNumber = 2;
+					spectatorMode = true;
+					inputBotLevel();
+					break;
+				case 2:
+					System.out.println("Goodbye!");
+					gameOver = true;
+					break;
+				default:
+					System.err.println("Please enter a valid value!");
+					continue;
 				}
-
+				break;
 			} catch (Exception e) {
 				System.err.println("Please enter a valid value!");
 			}
-
-		}
+		} while (true);
 
 	}
 
 	@Override
 	public void inputBotLevel() {
+		System.out.println("How many bot players do you want in the game");
 		System.out.println(
-				"How many bot players do you want in the game (max bot player number is: " + maxBotPlayerNumber + ")");
-		isValid = false;
-		while (!isValid) {
+				"Minimum bot player number: " + minimumBotPlayerNumber + "\nMaximum bot player number: " + maximumBotPlayerNumber);
+		do {
 			try {
 				int botPlayersNumberChoice = Integer.parseInt(scanner.nextLine());
-
-				if (botPlayersNumberChoice < minimumBotPlayerNumber || botPlayersNumberChoice > maxBotPlayerNumber) {
-					isValid = false;
+				if (botPlayersNumberChoice < minimumBotPlayerNumber || botPlayersNumberChoice > maximumBotPlayerNumber) {
 					System.out.println("Please enter a valid value!");
 				} else {
 					isValid = true;
@@ -264,54 +257,49 @@ public class Game implements Misti {
 								+ BotConstants.NOVICE_BOT_NAME + " => " + BotConstants.NOVICE_BOT_LEVEL + "\n"
 								+ BotConstants.REGULAR_BOT_NAME + " => " + BotConstants.REGULAR_BOT_LEVEL + "\n"
 								+ BotConstants.EXPERT_BOT_NAME + " => " + BotConstants.EXPERT_BOT_LEVEL);
-						boolean flag = false;
-						while (!flag) {
+						boolean checked = false;
+						do {
 							try {
 								int botDifficultyLevelChoice = Integer.parseInt(scanner.nextLine());
-								if (botDifficultyLevelChoice < 0 || botDifficultyLevelChoice > 2) {
-									flag = false;
+								if (!String.valueOf(botDifficultyLevelChoice).matches("[0-2]")) {
 									System.out.println("Please enter a valid value!");
 								} else {
-									flag = true;
+									checked = true;
 									addBot(botDifficultyLevelChoice);
-									System.out.println(botPlayers[botPlayerNumber++].getName() + " has been added.");
 
 								}
 
 							} catch (Exception e) {
 								System.err.println("Please enter a valid value!");
 							}
-						}
+						} while (!checked);
 					}
 				}
 
 			} catch (Exception e) {
 				System.err.println("Please enter a valid value!");
 			}
-		}
+		} while (!isValid);
 
 	}
 
 	@Override
 	public void addBot(int botDifficultyLevelChoice) {
+		BotPlayers bot = null;
 		switch (botDifficultyLevelChoice) {
 		case BotConstants.NOVICE_BOT_LEVEL:
-			BotPlayers noviceBot = new NoviceBot();
-			botPlayers[botPlayerNumber] = noviceBot;
+			bot = new NoviceBot();
 			break;
-
 		case BotConstants.REGULAR_BOT_LEVEL:
-			BotPlayers regularBot = new RegularBot();
-			botPlayers[botPlayerNumber] = regularBot;
+			bot = new RegularBot();
 			break;
-
 		case BotConstants.EXPERT_BOT_LEVEL:
-			BotPlayers expertBot = new ExpertBot();
-			botPlayers[botPlayerNumber] = expertBot;
+			bot = new ExpertBot();
 			break;
 
 		}
-
+		botPlayers[botPlayerNumber] = bot;
+		System.out.println(botPlayers[botPlayerNumber++].getName() + " has been added.");
 	}
 
 	@Override
