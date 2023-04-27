@@ -68,36 +68,30 @@ public class Game implements Misti {
 					if (!spectatorMode) {
 						checkBoardStatus();
 						humanPlayCard();
-						for (BotPlayers botPlayer : botPlayers) {
-							checkBoardStatus();
-							if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
-								noviceBotPlayCard(botPlayer);
-							else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
-								regularBotPlayCard(botPlayer);
-							else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
-								expertBotPlayCard(botPlayer);
-
-						}
+						botPlayerTurn();
 
 					} else {
-						System.out.println("spectate döndüm");
+						System.out.println("spectate mode");
 						checkBoardStatus();
-						humanPlayCard();
-						for (BotPlayers botPlayer : botPlayers) {
-							checkBoardStatus();
-							if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
-								noviceBotPlayCard(botPlayer);
-							else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
-								regularBotPlayCard(botPlayer);
-							else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
-								expertBotPlayCard(botPlayer);
-						}
+						botPlayerTurn();
 					}
 				}
 
 			}
 		}
 
+	}
+
+	private void botPlayerTurn() {
+		for (BotPlayers botPlayer : botPlayers) {
+			checkBoardStatus();
+			if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
+				noviceBotPlayCard(botPlayer);
+			else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
+				regularBotPlayCard(botPlayer);
+			else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
+				expertBotPlayCard(botPlayer);
+		}
 	}
 
 	private void expertBotPlayCard(BotPlayers expertBot) {
@@ -223,8 +217,7 @@ public class Game implements Misti {
 					|| playedCard.getRank().equalsIgnoreCase("J")) {
 				if (board.size() == 2) {
 					System.out.println(botPlayer.getName() + " made a Misti!");
-					int newMistiNumber = botPlayer.getMistiNumber() + 1;
-					botPlayer.setMistiNumber(newMistiNumber);
+					botPlayer.setMistiNumber(botPlayer.getMistiNumber() + 1);
 				} else {
 					System.out.println(botPlayer.getName() + " Collecting all cards on board...");
 					botPlayer.getCollectedCards().addAll(board);
@@ -241,10 +234,9 @@ public class Game implements Misti {
 					|| playedCard.getRank().equalsIgnoreCase("J")) {
 				if (board.size() == 2) {
 					System.out.println(humanPlayer.getName() + " made a Misti!");
-					int newMistiNumber = humanPlayer.getMistiNumber() + 1;
-					humanPlayer.setMistiNumber(newMistiNumber);
+					humanPlayer.setMistiNumber(humanPlayer.getMistiNumber() + 1);
 				} else {
-					System.out.println("Collecting cards on board...");
+					System.out.println(humanPlayer.getName() + " is collecting all cards on board...");
 					humanPlayer.getCollectedCards().addAll(board);
 					board.clear();
 				}
@@ -274,7 +266,7 @@ public class Game implements Misti {
 		} while (!validPlayerInput);
 
 		Cards playedCard = humanPlayer.getHand().get(playerCardChoice - 1);
-		System.out.println("Playing: " + playedCard);
+		System.out.println(humanPlayer.getName() + " is Playing: " + playedCard);
 		board.add(playedCard);
 		humanPlayer.getHand().remove(playerCardChoice - 1);
 		compare(playedCard, humanPlayer);
