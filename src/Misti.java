@@ -5,8 +5,6 @@ public interface Misti {
 
 	void inputPlayers();
 
-	void checkBotStatus();
-
 	void checkPlayerStatus();
 
 	void dealCardsToPlayers();

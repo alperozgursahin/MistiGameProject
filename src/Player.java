@@ -6,6 +6,7 @@ public abstract class Player {
 	private ArrayList<Cards> hand;
 	private ArrayList<Cards> collectedCards;
 	private int mistiNumber;
+	private int score;
 
 	public Player(String name) {
 		this.setName(name);
@@ -45,6 +46,13 @@ public abstract class Player {
 	public void setMistiNumber(int mistiNumber) {
 		this.mistiNumber = mistiNumber;
 	}
-	
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
 
 }
