@@ -8,6 +8,7 @@ public class Game implements Misti {
 	Random random = new Random();
 	ArrayList<Cards> deck = new ArrayList<>();
 	ArrayList<Cards> board = new ArrayList<>();
+	ArrayList<Cards> thrownCards = new ArrayList<>();
 
 	HumanPlayer humanPlayer;
 	boolean spectatorMode = false;
@@ -38,7 +39,6 @@ public class Game implements Misti {
 				"██║ ╚═╝ ██║ ██████║  ███████╔╝   ██║    ██████║   ",
 				"╚═╝     ╚═╝ ╚═════╝  ╚══════╝    ╚═╝    ╚═════╝ " };
 
-		// Harfleri düzenli bir şekilde çizmek için her bir satırı yazdırma
 		for (String harf : misti) {
 			System.out.println(harf.trim());
 		}
@@ -51,7 +51,8 @@ public class Game implements Misti {
 		inputPlayers();
 
 		if (!gameOver) {
-			playerNumber = botPlayers.length + isHumanPlayerIn();
+			int isHumanPlayerIn = spectatorMode ? 0 : 1;
+			playerNumber = botPlayers.length + isHumanPlayerIn;
 			round = roundNumberCalculator(playerNumber);
 			dealCardsToBoard();
 		}
@@ -86,19 +87,149 @@ public class Game implements Misti {
 		for (BotPlayers botPlayer : botPlayers) {
 			checkBoardStatus();
 			if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
-				noviceBotPlayCard(botPlayer);
+				compare(noviceBotPlayCard(botPlayer), botPlayer);
 			else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
-				regularBotPlayCard(botPlayer);
+				compare(regularBotPlayCard(botPlayer), botPlayer);
 			else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
-				expertBotPlayCard(botPlayer);
+				compare(expertBotPlayCard(botPlayer), botPlayer);
 		}
 	}
 
-	private void expertBotPlayCard(BotPlayers expertBot) {
+	private Cards expertBotPlayCard(BotPlayers expertBot) {
 		getBotHand(expertBot);
+
+		boolean canTakeBoard = false;
+		boolean isJokerPlayable = false;
+		boolean isCardsNumHigher = false;
+		int playedNormalCardIndex = 0;
+		int playedJokerCardIndex = 0;
+		int boardCardsMaxPotentialPoint = 0;
+
+		Cards playedCard = null;
+		Cards playedJokerCard = null;
+
+		if (!board.isEmpty()) {
+			for (int i = 0; i < expertBot.getHand().size(); i++) {
+
+				if (expertBot.getHand().get(i).getRank().equals(board.get(board.size() - 1).getRank())) {
+					playedCard = expertBot.getHand().get(i);
+					playedNormalCardIndex = i;
+
+					if ((playedCard.getPoint() + boardCardsSum) > boardCardsMaxPotentialPoint) {
+						playedCard = expertBot.getHand().get(i);
+						playedNormalCardIndex = i;
+
+						isCardsNumHigher = true;
+						canTakeBoard = true;
+						boardCardsMaxPotentialPoint += playedCard.getPoint() + boardCardsSum;
+
+					}
+
+				}
+
+				if (expertBot.getHand().get(i).getRank().equalsIgnoreCase("J")) {
+					playedJokerCardIndex = i;
+					playedJokerCard = expertBot.getHand().get(i);
+					if ((playedJokerCard.getPoint() + boardCardsSum) > 0) {
+						isCardsNumHigher = true;
+						isJokerPlayable = true;
+
+					}
+
+				}
+
+			}
+		} else {
+			int mostPlayedCardIndex = -1;
+			ArrayList<Cards> mostPlayedCards = new ArrayList<>();
+
+			int[] mostThrownCards = { 0, 0, 0, 0 };
+			for (int i = 0; i < thrownCards.size(); i++) {
+				for (int j = 0; j < expertBot.getHand().size(); j++) {
+					if (thrownCards.get(i) == expertBot.getHand().get(j)) {
+						mostThrownCards[j]++;
+					}
+				}
+			}
+			for (int i = 0; i < mostThrownCards.length; i++) {
+				if (mostThrownCards[i] == 3) {
+					playedCard = expertBot.getHand().get(i);
+					mostPlayedCards.add(playedCard);
+				}
+			}
+			playedCard = metod(mostPlayedCards);
+			for (int i = 0; i < expertBot.getHand().size(); i++) {
+				if (expertBot.getHand().get(i) == playedCard)
+					mostPlayedCardIndex = i;
+			}
+
+			if (playedCard != null) {
+				board.add(playedCard);
+				expertBot.getHand().remove(mostPlayedCardIndex);
+				return playedCard;
+			}
+
+		}
+
+		boardCardsMaxPotentialPoint = 0;
+		if (isCardsNumHigher) {
+			if (canTakeBoard) {
+				board.add(playedCard);
+				expertBot.getHand().remove(playedNormalCardIndex);
+				System.out.println(expertBot.getName() + " is playing: " + playedCard);
+				return playedCard;
+
+			} else if (isJokerPlayable) {
+				board.add(playedJokerCard);
+				expertBot.getHand().remove(playedJokerCardIndex);
+				System.out.println(expertBot.getName() + " is playing: " + playedJokerCard);
+				return playedJokerCard;
+
+			}
+		} else {
+			int lowestCardIndex = 0;
+			int lowestCardPoint = Integer.MAX_VALUE;
+
+			for (int i = 0; i < expertBot.getHand().size(); i++) {
+				if (!board.isEmpty()) {
+					if ((lowestCardPoint > expertBot.getHand().get(i).getPoint())
+							&& !(expertBot.getHand().get(i).getRank().equals(board.get(board.size() - 1).getRank()))) {
+						lowestCardPoint = expertBot.getHand().get(i).getPoint();
+						playedCard = expertBot.getHand().get(i);
+						lowestCardIndex = i;
+					}
+				} else {
+					if (lowestCardPoint > expertBot.getHand().get(i).getPoint()) {
+						lowestCardPoint = expertBot.getHand().get(i).getPoint();
+						playedCard = expertBot.getHand().get(i);
+						lowestCardIndex = i;
+					}
+
+				}
+
+			}
+
+			board.add(playedCard);
+			expertBot.getHand().remove(lowestCardIndex);
+			System.out.println(expertBot.getName() + " is playing: " + playedCard);
+			return playedCard;
+
+		}
+		return null;
+
 	}
 
-	private void regularBotPlayCard(BotPlayers regularBot) {
+	private Cards metod(ArrayList<Cards> mostPlayedCards) {
+		int maxCardPoint = Integer.MAX_VALUE;
+		Cards lowestMostPlayedCard = null;
+		for (int i = 0; i < mostPlayedCards.size(); i++) {
+			if (maxCardPoint > mostPlayedCards.get(i).getPoint())
+				lowestMostPlayedCard = mostPlayedCards.get(i);
+		}
+		return lowestMostPlayedCard;
+	}
+
+	private Cards regularBotPlayCard(BotPlayers regularBot) {
 		getBotHand(regularBot);
 
 		boolean canTakeBoard = false;
@@ -147,15 +278,17 @@ public class Game implements Misti {
 		if (isCardsNumHigher) {
 			if (canTakeBoard) {
 				board.add(playedCard);
+				thrownCards.add(playedCard);
 				regularBot.getHand().remove(playedNormalCardIndex);
 				System.out.println(regularBot.getName() + " is playing: " + playedCard);
-				compare(playedCard, regularBot);
+				return playedCard;
 
 			} else if (isJokerPlayable) {
 				board.add(playedJokerCard);
+				thrownCards.add(playedJokerCard);
 				regularBot.getHand().remove(playedJokerCardIndex);
 				System.out.println(regularBot.getName() + " is playing: " + playedJokerCard);
-				compare(playedJokerCard, regularBot);
+				return playedJokerCard;
 
 			}
 		} else {
@@ -180,23 +313,26 @@ public class Game implements Misti {
 
 			}
 			board.add(playedCard);
+			thrownCards.add(playedCard);
 			regularBot.getHand().remove(lowestCardIndex);
 			System.out.println(regularBot.getName() + " is playing: " + playedCard);
-			compare(playedCard, regularBot);
+			return playedCard;
 
 		}
+		return null;
 
 	}
 
-	private void noviceBotPlayCard(BotPlayers noviceBot) {
+	private Cards noviceBotPlayCard(BotPlayers noviceBot) {
 		getBotHand(noviceBot);
 
 		int noviceBotCardChoice = random.nextInt(noviceBot.getHand().size()) + 1;
 		Cards playedCard = noviceBot.getHand().get(noviceBotCardChoice - 1);
 		System.out.println(noviceBot.getName() + " is playing: " + playedCard);
 		board.add(playedCard);
+		thrownCards.add(playedCard);
 		noviceBot.getHand().remove(noviceBotCardChoice - 1);
-		compare(playedCard, noviceBot);
+		return playedCard;
 
 	}
 
@@ -213,16 +349,21 @@ public class Game implements Misti {
 
 	private void compare(Cards playedCard, BotPlayers botPlayer) {
 		if (board.size() != 1) {
-			if (playedCard.getRank().equalsIgnoreCase(board.get(board.size() - 2).getRank())
-					|| playedCard.getRank().equalsIgnoreCase("J")) {
+			if (playedCard.getRank().equalsIgnoreCase(board.get(board.size() - 2).getRank())) {
 				if (board.size() == 2) {
 					System.out.println(botPlayer.getName() + " made a Misti!");
 					botPlayer.setMistiNumber(botPlayer.getMistiNumber() + 1);
+					botPlayer.getCollectedCards().addAll(board);
+					board.clear();
 				} else {
 					System.out.println(botPlayer.getName() + " Collecting all cards on board...");
 					botPlayer.getCollectedCards().addAll(board);
 					board.clear();
 				}
+			} else if (playedCard.getRank().equalsIgnoreCase("J")) {
+				System.out.println(botPlayer.getName() + " Collecting all cards on board...");
+				botPlayer.getCollectedCards().addAll(board);
+				board.clear();
 			}
 		}
 
@@ -230,16 +371,21 @@ public class Game implements Misti {
 
 	private void compare(Cards playedCard, HumanPlayer humanPlayer) {
 		if (board.size() != 1) {
-			if (playedCard.getRank().equalsIgnoreCase(board.get(board.size() - 2).getRank())
-					|| playedCard.getRank().equalsIgnoreCase("J")) {
+			if (playedCard.getRank().equalsIgnoreCase(board.get(board.size() - 2).getRank())) {
 				if (board.size() == 2) {
 					System.out.println(humanPlayer.getName() + " made a Misti!");
 					humanPlayer.setMistiNumber(humanPlayer.getMistiNumber() + 1);
+					humanPlayer.getCollectedCards().addAll(board);
+					board.clear();
 				} else {
-					System.out.println(humanPlayer.getName() + " is collecting all cards on board...");
+					System.out.println(humanPlayer.getName() + " Collecting all cards on board...");
 					humanPlayer.getCollectedCards().addAll(board);
 					board.clear();
 				}
+			} else if (playedCard.getRank().equalsIgnoreCase("J")) {
+				System.out.println(humanPlayer.getName() + " Collecting all cards on board...");
+				humanPlayer.getCollectedCards().addAll(board);
+				board.clear();
 			}
 		}
 	}
@@ -268,6 +414,7 @@ public class Game implements Misti {
 		Cards playedCard = humanPlayer.getHand().get(playerCardChoice - 1);
 		System.out.println(humanPlayer.getName() + " is Playing: " + playedCard);
 		board.add(playedCard);
+		thrownCards.add(playedCard);
 		humanPlayer.getHand().remove(playerCardChoice - 1);
 		compare(playedCard, humanPlayer);
 
@@ -282,13 +429,6 @@ public class Game implements Misti {
 			return 6;
 		else
 			return 0;
-	}
-
-	private int isHumanPlayerIn() {
-		if (spectatorMode)
-			return 0;
-		else
-			return 1;
 	}
 
 	@Override
@@ -363,6 +503,7 @@ public class Game implements Misti {
 							}
 						} while (!checked);
 					}
+					implementBotNames();
 				}
 
 			} catch (Exception e) {
@@ -372,9 +513,25 @@ public class Game implements Misti {
 
 	}
 
+	private void implementBotNames() {
+		int noviceBotCounter = 0;
+		int regularBotCounter = 0;
+		int expertBotCounter = 0;
+		for (BotPlayers botPlayer : botPlayers) {
+			if (botPlayer.getBotDifficulty() == BotConstants.NOVICE_BOT_LEVEL)
+				botPlayer.setName(botPlayer.getName() + " " + ++noviceBotCounter);
+			else if (botPlayer.getBotDifficulty() == BotConstants.REGULAR_BOT_LEVEL)
+				botPlayer.setName(botPlayer.getName() + " " + ++regularBotCounter);
+			else if (botPlayer.getBotDifficulty() == BotConstants.EXPERT_BOT_LEVEL)
+				botPlayer.setName(botPlayer.getName() + " " + ++expertBotCounter);
+		}
+
+	}
+
 	@Override
 	public void addBot(int botDifficultyLevelChoice) {
 		BotPlayers bot = null;
+
 		switch (botDifficultyLevelChoice) {
 		case BotConstants.NOVICE_BOT_LEVEL:
 			bot = new NoviceBot();
