@@ -1,12 +1,14 @@
 import java.util.ArrayList;
 
-public abstract class Player {
+public class Player {
 
 	private String name;
 	private ArrayList<Cards> hand;
 	private ArrayList<Cards> collectedCards;
 	private int mistiNumber;
 	private int score;
+	private String type;
+	
 
 	public Player(String name) {
 		this.setName(name);
@@ -53,6 +55,14 @@ public abstract class Player {
 
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

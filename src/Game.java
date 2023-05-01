@@ -80,8 +80,7 @@ public class Game implements Misti {
 			}
 		}
 
-		Scoreboard scoreboard = new Scoreboard(humanPlayer, botPlayers);
-		scoreboard.getScores();
+		new Scoreboard(humanPlayer, botPlayers);
 	}
 
 	private void botPlayerTurn() {

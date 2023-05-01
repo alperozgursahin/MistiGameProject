@@ -1,58 +1,116 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Scoreboard {
 
-	private HumanPlayer humanPlayer;
-	private BotPlayers[] botPlayers;
+	private ArrayList<Player> players = new ArrayList<>();
+	private Player highestScoredPlayer = null;
+	private static final String filePath = "HighScores.txt";
 
 	public Scoreboard(HumanPlayer humanPlayer, BotPlayers[] botPlayers) {
-		this.setHumanPlayer(humanPlayer);
-		this.setBotPlayers(botPlayers);
-		scoreCalculator();
+
+		scoreCalculator(humanPlayer, botPlayers);
+		writeScores();
 	}
 
-	public void getScores() {
-		System.out.println("**********SCOREBOARD**********");
-		if (humanPlayer != null) {
-			System.out.println(humanPlayer.getName() + "'s Score is: " + humanPlayer.getScore() + " Pisti Number is: "
-					+ humanPlayer.getMistiNumber());
-		}
-		for (int i = 0; i < botPlayers.length; i++) {
-			System.out.println(botPlayers[i].getName() + " Score is: " + botPlayers[i].getScore() + " Pisti Number is: "
-					+ botPlayers[i].getMistiNumber());
-
-		}
-	}
-
-	private void scoreCalculator() {
+	private void scoreCalculator(HumanPlayer humanPlayer, BotPlayers[] botPlayers) {
+		System.out.println();
 		System.out.println("Scores are calculating..");
-		if (humanPlayer != null) {
-			for (Cards card : humanPlayer.getCollectedCards()) {
-				humanPlayer.setScore(humanPlayer.getScore() + card.getPoint());
-			}
-			humanPlayer.setScore(humanPlayer.getScore() + humanPlayer.getMistiNumber() * 10);
+		if (humanPlayer != null)
+			players.add(humanPlayer);
+		for (BotPlayers botPlayer : botPlayers) {
+			players.add(botPlayer);
 		}
-		for (int i = 0; i < botPlayers.length; i++) {
-			for (Cards card : botPlayers[i].getCollectedCards()) {
-				botPlayers[i].setScore(botPlayers[i].getScore() + card.getPoint());
+
+		for (int i = 0; i < players.size(); i++) {
+			for (Cards card : players.get(i).getCollectedCards()) {
+				players.get(i).setScore(players.get(i).getScore() + card.getPoint());
 			}
-			botPlayers[i].setScore(botPlayers[i].getScore() + botPlayers[i].getMistiNumber() * 10);
+			players.get(i).setScore(players.get(i).getScore() + players.get(i).getMistiNumber() * 10);
 		}
+		System.out.println();
+		System.out.println("**********SCOREBOARD**********");
+		System.out.println("-----------------------------");
+		for (int i = 0; i < players.size(); i++) {
+
+			System.out.println(players.get(i).getName() + " Score is: " + players.get(i).getScore()
+					+ " Pisti Number is: " + players.get(i).getMistiNumber());
+
+		}
+		System.out.println("-----------------------------");
+		int lowestScore = Integer.MIN_VALUE;
+		for (Player player : players) {
+
+			if (player.getScore() > lowestScore) {
+				lowestScore = player.getScore();
+				highestScoredPlayer = player;
+			}
+
+		}
+
+		players.clear();
+		players.add(highestScoredPlayer);
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(filePath));
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				String[] parts = line.split(",");
+				String name = parts[0].trim();
+				int point = Integer.parseInt(parts[1].trim());
+				Player player = new Player(name);
+				player.setScore(point);
+				players.add(player);
+			}
+
+			br.close();
+		} catch (IOException e) {
+			try {
+				File newFile = new File(filePath);
+				newFile.createNewFile();
+				System.out.println("New file created: " + filePath);
+			} catch (IOException ex) {
+
+				System.out.println("Could not create new file.");
+			}
+		}
+
 	}
 
-	public BotPlayers[] getBotPlayers() {
-		return botPlayers;
-	}
+	private void writeScores() {
 
-	public void setBotPlayers(BotPlayers[] botPlayers) {
-		this.botPlayers = botPlayers;
-	}
+		Collections.sort(players, Comparator.comparingInt(Player::getScore).reversed());
 
-	public HumanPlayer getHumanPlayer() {
-		return humanPlayer;
-	}
+		for (int i = players.size(); i > 10; i--) {
+			System.out.println(highestScoredPlayer.getName() + " IS ENTERING THE HIGH SCORE LIST!!!");
+			System.out.println("Removing player from " + filePath);
+			players.remove(players.size() - 1);
+		}
+		File file = new File(filePath);
+		try {
+			FileWriter fileWriter = new FileWriter(file);
+			System.out.println();
+			System.out.println(filePath + " is Arranging..");
+			System.out.println();
+			for (Player player : players) {
+				fileWriter.write(player.getName() + ", " + player.getScore() + "\n");
+				System.out.println("Name: " + player.getName() + " | Score: " + player.getScore());
+			}
 
-	public void setHumanPlayer(HumanPlayer humanPlayer) {
-		this.humanPlayer = humanPlayer;
+			fileWriter.close();
+			System.out.println();
+			System.out.println("File created and players written.");
+		} catch (IOException e) {
+			System.out.println("File creation error: " + e.getMessage());
+		}
+
 	}
 
 }
