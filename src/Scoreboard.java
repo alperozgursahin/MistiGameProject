@@ -14,7 +14,7 @@ public class Scoreboard {
 	private static final String filePath = "HighScores.txt";
 
 	public Scoreboard(HumanPlayer humanPlayer, BotPlayers[] botPlayers) {
-
+		
 		scoreCalculator(humanPlayer, botPlayers);
 		writeScores();
 	}
@@ -89,9 +89,12 @@ public class Scoreboard {
 		Collections.sort(players, Comparator.comparingInt(Player::getScore).reversed());
 
 		for (int i = players.size(); i > 10; i--) {
-			System.out.println(highestScoredPlayer.getName() + " IS ENTERING THE HIGH SCORE LIST!!!");
-			System.out.println("Removing player from " + filePath);
+			if (highestScoredPlayer.getScore() > players.get(players.size() - 1).getScore()) {
+				System.out.println(highestScoredPlayer.getName() + " IS ENTERING THE HIGH SCORE LIST!!!");
+				System.out.println(players.get(players.size() - 1).getName() + " is removing from " + filePath);
+			}
 			players.remove(players.size() - 1);
+
 		}
 		File file = new File(filePath);
 		try {

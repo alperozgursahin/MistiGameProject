@@ -8,13 +8,26 @@ public class Player {
 	private int mistiNumber;
 	private int score;
 	private String type;
-	
 
 	public Player(String name) {
 		this.setName(name);
 		this.hand = new ArrayList<Cards>();
 		this.collectedCards = new ArrayList<Cards>();
 		this.mistiNumber = 0;
+	}
+
+	public void handOrganizer(Cards playedCard) {
+		int index = -1;
+		for (int i = 0; i < this.getHand().size(); i++) {
+			if (playedCard == this.getHand().get(i)) {
+				index = i;
+				break;
+			}
+
+		}
+		Game.getBoard().add(playedCard);
+		Game.getThrownCards().add(playedCard);
+		getHand().remove(index);
 	}
 
 	public String getName() {

@@ -5,8 +5,6 @@ public interface Misti {
 
 	void inputPlayers();
 
-	void checkPlayerStatus();
-
 	void dealCardsToPlayers();
 
 	void dealCardsToBoard();
@@ -16,7 +14,5 @@ public interface Misti {
 	void inputBotLevel();
 
 	void addBot(int botDifficultyLevelChoice);
-
-	void humanPlayCard();
 
 }

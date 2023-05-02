@@ -9,6 +9,8 @@ public abstract class BotPlayers extends Player {
 		this.setType("BOT");
 
 	}
+	
+	public abstract Cards botPlayCard();
 
 	public int getBotDifficulty() {
 		return botDifficulty;
