@@ -6,14 +6,23 @@ public class Game implements Misti {
 	private Scanner scanner = new Scanner(System.in);
 	private ArrayList<Cards> deck = new ArrayList<>();
 	private static ArrayList<Cards> board = new ArrayList<>();
-	private static ArrayList<Cards> thrownCards = new ArrayList<>();
 
 	private static HumanPlayer humanPlayer;
 	private boolean spectatorMode = false;
 	private boolean isValid = false;
 	private boolean gameOver;
+	private static Player lastWinner;
 
-	private BotPlayers[] botPlayers;
+	private static BotPlayers[] botPlayers;
+
+	public static BotPlayers[] getBotPlayers() {
+		return botPlayers;
+	}
+
+	public static void setBotPlayers(BotPlayers[] botPlayers) {
+		Game.botPlayers = botPlayers;
+	}
+
 	private int maximumBotPlayerNumber = 3;
 	private int minimumBotPlayerNumber = 1;
 	private int botPlayerNumber;
@@ -76,7 +85,17 @@ public class Game implements Misti {
 				}
 
 			}
+			addLastCardsToPlayer(lastWinner);
 			new Scoreboard(humanPlayer, botPlayers);
+		}
+
+	}
+
+	private void addLastCardsToPlayer(Player lastWinner) {
+		if (!board.isEmpty()) {
+			System.out.println("Last Board Cards added to " + lastWinner.getName() + " Collected Cards.");
+			lastWinner.getCollectedCards().addAll(board);
+			board.clear();
 		}
 
 	}
@@ -86,8 +105,6 @@ public class Game implements Misti {
 			getBotHand(botPlayer);
 			System.out.println();
 			compare(botPlayer.botPlayCard(), botPlayer);
-			System.out.println();
-			System.out.println("---------------------------------------------------");
 
 		}
 	}
@@ -96,8 +113,11 @@ public class Game implements Misti {
 		int maxCardPoint = Integer.MAX_VALUE;
 		Cards lowestMostPlayedCard = null;
 		for (int i = 0; i < mostPlayedCards.size(); i++) {
-			if (maxCardPoint > mostPlayedCards.get(i).getPoint())
+			if (maxCardPoint > mostPlayedCards.get(i).getPoint()) {
 				lowestMostPlayedCard = mostPlayedCards.get(i);
+				maxCardPoint = mostPlayedCards.get(i).getPoint();
+			}
+
 		}
 		return lowestMostPlayedCard;
 	}
@@ -114,17 +134,23 @@ public class Game implements Misti {
 
 	protected static void compare(Cards playedCard, Player player) {
 		System.out.println(player.getName() + " is Playing: " + playedCard);
+		System.out.println("\n---------------------------------------------------\n");
 		if (getBoard().size() != 1) {
 			if (playedCard.getRank().equalsIgnoreCase(getBoard().get(getBoard().size() - 2).getRank())) {
 				System.out.println(player.getName() + " Collecting all cards on board...");
 				if (getBoard().size() == 2) {
-					System.out.println(player.getName() + " made a Misti!");
+					System.out.println(
+							player.getName() + " made a Pisti!\n---------------------------------------------------");
 					player.setMistiNumber(player.getMistiNumber() + 1);
-				}
+					player.setMistiScore(player.getMistiScore() + board.get(0).getPoint() + playedCard.getPoint());
 
+				}
+				lastWinner = player;
 				player.getCollectedCards().addAll(getBoard());
+				player.setScore(player.getScore() - playedCard.getPoint() - board.get(0).getPoint());
 				getBoard().clear();
 			} else if (playedCard.getRank().equalsIgnoreCase("J")) {
+				lastWinner = player;
 				System.out.println(player.getName() + " Collecting all cards on board...");
 				player.getCollectedCards().addAll(getBoard());
 				getBoard().clear();
@@ -258,6 +284,7 @@ public class Game implements Misti {
 		}
 		botPlayers[botPlayerNumber] = bot;
 		System.out.println(botPlayers[botPlayerNumber++].getName() + " has been added.");
+		System.out.println();
 	}
 
 	@Override
@@ -299,7 +326,7 @@ public class Game implements Misti {
 		if (deck.isEmpty())
 			gameOver = true;
 		System.out.println();
-		System.out.println("Board cards are: ");
+		System.out.println("██████████████████████████  B O A R D  ██████████████████████████\n");
 
 		boardCardsSum = 0;
 		for (int i = 0; i < getBoard().size(); i++) {
@@ -307,13 +334,14 @@ public class Game implements Misti {
 			boardCardsSum += getBoard().get(i).getPoint();
 		}
 		System.out.println();
+		System.out.println();
 
 		System.out.println("Board cards sum: " + boardCardsSum);
 		Cards lastCard = getBoard().isEmpty() ? null : getBoard().get(getBoard().size() - 1);
 		// System.out.println("Remained deck cards: " + deck.size());
-		System.out.println();
-		System.out.println("The last board card is: " + lastCard);
-		System.out.println();
+		System.out.println("The last board card is: " + lastCard + "\n");
+		System.out.println("██████████████████████████████████████████████████████████████████\n");
+
 	}
 
 	public static ArrayList<Cards> getBoard() {
@@ -322,15 +350,6 @@ public class Game implements Misti {
 
 	public static void setBoard(ArrayList<Cards> board) {
 		Game.board = board;
-	}
-
-	public static ArrayList<Cards> getThrownCards() {
-		return thrownCards;
-	}
-
-	public static void setThrownCards(ArrayList<Cards> thrownCards) {
-		Game.thrownCards = thrownCards;
-
 	}
 
 	public static HumanPlayer getHumanPlayer() {
@@ -347,5 +366,13 @@ public class Game implements Misti {
 
 	public static void setBoardCardsSum(int boardCardsSum) {
 		Game.boardCardsSum = boardCardsSum;
+	}
+
+	public Player getLastWinner() {
+		return lastWinner;
+	}
+
+	public void setLastWinner(Player lastWinner) {
+		Game.lastWinner = lastWinner;
 	}
 }

@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class HumanPlayer extends Player {
+public final class HumanPlayer extends Player {
 
 	public HumanPlayer() {
 		super(humanNameInput());

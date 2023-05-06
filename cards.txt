@@ -1,4 +1,5 @@
-A*-3
-Spades*6
-Hearts*-2
-J*4
+A* -11
+Spades* -12
+Hearts* -9
+J* -10
+** 3

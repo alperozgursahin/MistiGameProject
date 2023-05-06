@@ -1,4 +1,3 @@
-
 public abstract class BotPlayers extends Player {
 
 	private int botDifficulty;

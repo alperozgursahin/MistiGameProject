@@ -15,6 +15,7 @@ public class Deck {
 	}
 
 	private void createDeck() {
+		int defaultPoint = 1;
 		Scanner scanner = new Scanner(System.in);
 		String[] suits = { "Spades", "Diamonds", "Hearts", "Clubs" };
 		String[] ranks = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
@@ -25,33 +26,46 @@ public class Deck {
 				cards.add(card);
 			}
 		}
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(fileInput(scanner)));
-			String line = reader.readLine();
-			while (line != null) {
-				String[] parts = line.split("\\*");
-				String suitOrRank = parts[0];
-				int value = Integer.parseInt(parts[1]);
-				for (Cards card : cards) {
-					if (card.getSuit().equals(suitOrRank) && card.getPoint() == Integer.MAX_VALUE) {
-						card.setPoint(value);
+		do {
+			try {
 
-					} else if (card.getRank().equals(suitOrRank) && card.getPoint() == Integer.MAX_VALUE) {
-						card.setPoint(value);
+				BufferedReader reader = new BufferedReader(new FileReader(fileInput(scanner)));
+				String line = reader.readLine();
+				while (line != null) {
+					if (line.startsWith("**")) {
+						defaultPoint = Integer.parseInt(line.substring(2).trim());
+						System.out.println("DEFAULT CARD POINT: " + defaultPoint);
+					} else {
+
+						String[] parts = line.split("\\*");
+						String suitOrRank = parts[0];
+						int value = Integer.parseInt(parts[1].trim());
+						for (Cards card : cards) {
+							if (card.getSuit().equals(suitOrRank) && card.getPoint() == Integer.MAX_VALUE) {
+								card.setPoint(value);
+
+							} else if (card.getRank().equals(suitOrRank) && card.getPoint() == Integer.MAX_VALUE) {
+								card.setPoint(value);
+							}
+
+						}
 					}
+
+					line = reader.readLine();
 
 				}
 
-				line = reader.readLine();
-
+				reader.close();
+				break;
+			} catch (IOException e) {
+				System.err.println("WRONG FILE NAME INPUT!!");
 			}
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		} while (true);
+
 		for (Cards card : cards) {
 			if (card.getPoint() == Integer.MAX_VALUE)
-				card.setPoint(1);
+				card.setPoint(defaultPoint);
 		}
 		for (Cards card : cards) {
 			System.out.println(card);
@@ -59,7 +73,7 @@ public class Deck {
 	}
 
 	private String fileInput(Scanner scanner) {
-		System.out.println("Please enter a file name which inputs values");
+		System.out.println("Please enter a file name which inputs card point values. Example(cards.txt)");
 		String fileName = scanner.nextLine();
 		return fileName;
 	}

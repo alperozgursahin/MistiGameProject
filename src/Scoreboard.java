@@ -14,7 +14,7 @@ public class Scoreboard {
 	private static final String filePath = "HighScores.txt";
 
 	public Scoreboard(HumanPlayer humanPlayer, BotPlayers[] botPlayers) {
-		
+
 		scoreCalculator(humanPlayer, botPlayers);
 		writeScores();
 	}
@@ -32,15 +32,17 @@ public class Scoreboard {
 			for (Cards card : players.get(i).getCollectedCards()) {
 				players.get(i).setScore(players.get(i).getScore() + card.getPoint());
 			}
-			players.get(i).setScore(players.get(i).getScore() + players.get(i).getMistiNumber() * 10);
+			players.get(i).setMistiScore(players.get(i).getMistiScore() * 5);
+			players.get(i).setScore(players.get(i).getScore() + players.get(i).getMistiScore());
 		}
 		System.out.println();
 		System.out.println("**********SCOREBOARD**********");
 		System.out.println("-----------------------------");
 		for (int i = 0; i < players.size(); i++) {
 
-			System.out.println(players.get(i).getName() + " Score is: " + players.get(i).getScore()
-					+ " Pisti Number is: " + players.get(i).getMistiNumber());
+			System.out
+					.println(players.get(i).getName() + " Score is: " + players.get(i).getScore() + " Pisti Number is: "
+							+ players.get(i).getMistiNumber() + " Pisti Score is : " + players.get(i).getMistiScore());
 
 		}
 		System.out.println("-----------------------------");

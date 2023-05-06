@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 
 public class Player {
@@ -8,6 +9,7 @@ public class Player {
 	private int mistiNumber;
 	private int score;
 	private String type;
+	private int mistiScore;
 
 	public Player(String name) {
 		this.setName(name);
@@ -26,7 +28,6 @@ public class Player {
 
 		}
 		Game.getBoard().add(playedCard);
-		Game.getThrownCards().add(playedCard);
 		getHand().remove(index);
 	}
 
@@ -76,6 +77,14 @@ public class Player {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public int getMistiScore() {
+		return mistiScore;
+	}
+
+	public void setMistiScore(int mistiScore) {
+		this.mistiScore = mistiScore;
 	}
 
 }
