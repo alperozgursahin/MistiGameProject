@@ -1,5 +1,4 @@
 
-
 public final class RegularBot extends BotPlayers {
 
 	public RegularBot() {
@@ -10,75 +9,75 @@ public final class RegularBot extends BotPlayers {
 	@Override
 	public Cards botPlayCard() {
 		boolean canTakeBoard = false;
-		boolean isJokerPlayable = false;
-		boolean isCardsNumHigher = false;
 		int boardCardsMaxPotentialPoint = 0;
 
 		Cards playedCard = null;
-		Cards playedJokerCard = null;
 
 		if (!Game.getBoard().isEmpty()) {
 			for (int i = 0; i < this.getHand().size(); i++) {
+				Cards currentCard = this.getHand().get(i);
+				if (currentCard.getRank().equals(Game.getBoard().get(Game.getBoard().size() - 1).getRank())) {
 
-				if (this.getHand().get(i).getRank().equals(Game.getBoard().get(Game.getBoard().size() - 1).getRank())) {
-					playedCard = this.getHand().get(i);
-					if ((playedCard.getPoint() + Game.getBoardCardsSum()) > boardCardsMaxPotentialPoint) {
+					if ((currentCard.getPoint() + Game.getBoardCardsSum()) > boardCardsMaxPotentialPoint) {
 						playedCard = this.getHand().get(i);
-
-						isCardsNumHigher = true;
 						canTakeBoard = true;
-						boardCardsMaxPotentialPoint += playedCard.getPoint() + Game.getBoardCardsSum();
-
+						boardCardsMaxPotentialPoint = playedCard.getPoint() + Game.getBoardCardsSum();
+						continue;
 					}
 
 				}
 
-				if (this.getHand().get(i).getRank().equalsIgnoreCase("J")) {
-					playedJokerCard = this.getHand().get(i);
-					if ((playedJokerCard.getPoint() + Game.getBoardCardsSum()) > 0) {
-						isCardsNumHigher = true;
-						isJokerPlayable = true;
+				if (currentCard.getRank().equalsIgnoreCase("J")) {
 
+					if ((currentCard.getPoint() + Game.getBoardCardsSum()) > boardCardsMaxPotentialPoint) {
+						playedCard = this.getHand().get(i);
+						boardCardsMaxPotentialPoint = playedCard.getPoint() + Game.getBoardCardsSum();
+						canTakeBoard = true;
 					}
 
 				}
 
 			}
 		}
-		boardCardsMaxPotentialPoint = 0;
-		if (isCardsNumHigher) {
-			if (canTakeBoard) {
-				handOrganizer(playedCard);
-				return playedCard;
+		if (canTakeBoard) {
 
-			} else if (isJokerPlayable) {
-				handOrganizer(playedJokerCard);
-				return playedJokerCard;
-
-			}
-		} else {
-			int lowestCardPoint = Integer.MAX_VALUE;
-			for (int i = 0; i < this.getHand().size(); i++) {
-				if (!Game.getBoard().isEmpty()) {
-					if ((lowestCardPoint > this.getHand().get(i).getPoint()) && !(this.getHand().get(i).getRank()
-							.equals(Game.getBoard().get(Game.getBoard().size() - 1).getRank()))) {
-						lowestCardPoint = this.getHand().get(i).getPoint();
-						playedCard = this.getHand().get(i);
-					}
-				} else {
-					if (lowestCardPoint > this.getHand().get(i).getPoint()) {
-						lowestCardPoint = this.getHand().get(i).getPoint();
-						playedCard = this.getHand().get(i);
-					}
-
-				}
-
-			}
 			handOrganizer(playedCard);
 			return playedCard;
 
+		} else {
+			int lowestCardPoint = Integer.MAX_VALUE;
+			for (int i = 0; i < this.getHand().size(); i++) {
+				Cards currentCard = this.getHand().get(i);
+				if (this.getHand().size() == 1) {
+					playedCard = this.getHand().get(0);
+					break;
+				}
+
+				if (!Game.getBoard().isEmpty()) {
+					if ((lowestCardPoint > this.getHand().get(i).getPoint())
+							&& !currentCard.getRank().equalsIgnoreCase("J")) {
+						if (!currentCard.getRank()
+								.equalsIgnoreCase(Game.getBoard().get(Game.getBoard().size() - 1).getRank())) {
+							lowestCardPoint = currentCard.getPoint();
+							playedCard = currentCard;
+						}
+					}
+
+				} else {
+					if (lowestCardPoint > currentCard.getPoint() && !currentCard.getRank().equalsIgnoreCase("J")) {
+						lowestCardPoint = currentCard.getPoint();
+						playedCard = currentCard;
+					}
+				}
+
+			}
+			if (playedCard == null) {
+				playedCard = this.getHand().get(0);
+			}
+
 		}
-		return null;
+		handOrganizer(playedCard);
+		return playedCard;
 	}
 
 }

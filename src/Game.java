@@ -361,7 +361,11 @@ public class Game implements Misti {
 	}
 
 	public static int getBoardCardsSum() {
-		return boardCardsSum;
+		int sum = 0;
+		for (Cards card : board) {
+			sum += card.getPoint();
+		}
+		return sum;
 	}
 
 	public static void setBoardCardsSum(int boardCardsSum) {
