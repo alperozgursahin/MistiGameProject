@@ -109,19 +109,6 @@ public class Game implements Misti {
 		}
 	}
 
-	protected static Cards getLowestMostPlayedCard(ArrayList<Cards> mostPlayedCards) {
-		int maxCardPoint = Integer.MAX_VALUE;
-		Cards lowestMostPlayedCard = null;
-		for (int i = 0; i < mostPlayedCards.size(); i++) {
-			if (maxCardPoint > mostPlayedCards.get(i).getPoint()) {
-				lowestMostPlayedCard = mostPlayedCards.get(i);
-				maxCardPoint = mostPlayedCards.get(i).getPoint();
-			}
-
-		}
-		return lowestMostPlayedCard;
-	}
-
 	private static void getBotHand(BotPlayers botPlayer) {
 		System.out.println(botPlayer.getName() + "'s cards are:");
 

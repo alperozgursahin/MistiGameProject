@@ -83,7 +83,7 @@ public final class ExpertBot extends BotPlayers {
 
 			}
 		} else {
-			playedCard = Game.getLowestMostPlayedCard(mostPlayedCards);
+			playedCard = getLowestMostPlayedCard(mostPlayedCards);
 
 			if (playedCard != null && !playedCard.getRank().equalsIgnoreCase("J")) {
 				handOrganizer(playedCard);
@@ -128,11 +128,11 @@ public final class ExpertBot extends BotPlayers {
 
 			int howManyThrownCards = -1;
 
-			for (int j = 0; j < this.getHand().size(); j++) {
-				if (playedCard.getPoint() == this.getHand().get(j).getPoint()) {
-					if (mostThrownCardsNumber[j] > howManyThrownCards) {
-						howManyThrownCards = mostThrownCardsNumber[j];
-						playedCard = this.getHand().get(j);
+			for (int i = 0; i < this.getHand().size(); i++) {
+				if (playedCard.getPoint() == this.getHand().get(i).getPoint()) {
+					if (mostThrownCardsNumber[i] > howManyThrownCards) {
+						howManyThrownCards = mostThrownCardsNumber[i];
+						playedCard = this.getHand().get(i);
 					}
 				}
 			}
@@ -141,6 +141,20 @@ public final class ExpertBot extends BotPlayers {
 
 		handOrganizer(playedCard);
 		return playedCard;
+	}
+
+	private Cards getLowestMostPlayedCard(ArrayList<Cards> mostPlayedCards) {
+		int maxCardPoint = Integer.MAX_VALUE;
+		Cards lowestMostPlayedCard = null;
+		for (int i = 0; i < mostPlayedCards.size(); i++) {
+			if (maxCardPoint > mostPlayedCards.get(i).getPoint()) {
+				lowestMostPlayedCard = mostPlayedCards.get(i);
+				maxCardPoint = mostPlayedCards.get(i).getPoint();
+			}
+
+		}
+		return lowestMostPlayedCard;
+
 	}
 
 }
