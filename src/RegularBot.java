@@ -9,6 +9,7 @@ public final class RegularBot extends BotPlayers {
 	@Override
 	public Cards botPlayCard() {
 		boolean canTakeBoard = false;
+		boolean canMakePisti = false;
 		int boardCardsMaxPotentialPoint = 0;
 
 		Cards playedCard = null;
@@ -22,12 +23,14 @@ public final class RegularBot extends BotPlayers {
 						playedCard = this.getHand().get(i);
 						canTakeBoard = true;
 						boardCardsMaxPotentialPoint = playedCard.getPoint() + Game.getBoardCardsSum();
+						if (Game.getBoard().size() == 1) 
+							canMakePisti = true;
 						continue;
 					}
 
 				}
 
-				if (currentCard.getRank().equalsIgnoreCase("J")) {
+				if (currentCard.getRank().equalsIgnoreCase("J") && !canMakePisti) {
 
 					if ((currentCard.getPoint() + Game.getBoardCardsSum()) > boardCardsMaxPotentialPoint) {
 						playedCard = this.getHand().get(i);
