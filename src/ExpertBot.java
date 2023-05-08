@@ -27,7 +27,7 @@ public final class ExpertBot extends BotPlayers {
 							.equalsIgnoreCase(botPlayer.getCollectedCards().get(j).getRank()))
 						mostThrownCardsNumber[i]++;
 
-				}				
+				}
 			}
 			// Checking Collected Cards From Human
 			if (Game.getHumanPlayer() != null) {
@@ -47,8 +47,18 @@ public final class ExpertBot extends BotPlayers {
 
 				}
 			}
+			if (Game.isVerbosness())
+				System.out.println(
+						this.getHand().get(i).toString() + " => Throwed " + mostThrownCardsNumber[i] + " Times");
 
-			System.out.println(this.getHand().get(i).getRank() + " Throwed:  " + mostThrownCardsNumber[i] + " Times");
+		}
+		System.out.println();
+
+		for (int i = 0; i < mostThrownCardsNumber.length; i++) {
+			if (mostThrownCardsNumber[i] == 3) {
+				playedCard = this.getHand().get(i);
+				mostPlayedCards.add(playedCard);
+			}
 		}
 
 		if (!Game.getBoard().isEmpty()) {
@@ -125,37 +135,33 @@ public final class ExpertBot extends BotPlayers {
 				}
 
 			}
-
 			if (playedCard == null) {
 				playedCard = this.getHand().get(0);
 			}
 
 			playedCard = getMostThrownCard(playedCard, mostThrownCardsNumber);
-
 		}
 
 		handOrganizer(playedCard);
 		return playedCard;
 	}
-	
+
 	private Cards getMostThrownCard(Cards playedCard, int[] mostThrownCardsNumber) {
-	    int howManyThrownCards = -1;
-	    Cards mostThrownCard = playedCard;
+		int howManyThrownCards = -1;
+		Cards mostThrownCard = playedCard;
 
-	    for (Cards card : this.getHand()) {
-	        if (card.getPoint() == playedCard.getPoint()
-	                && mostThrownCardsNumber[getHand().indexOf(card)] > howManyThrownCards
-	                && !card.getRank().equalsIgnoreCase("J")
-	                && (Game.getBoard().isEmpty()
-	                    || !card.getRank().equalsIgnoreCase(Game.getBoard().get(Game.getBoard().size() - 1).getRank()))) {
-	            howManyThrownCards = mostThrownCardsNumber[getHand().indexOf(card)];
-	            mostThrownCard = card;
-	        }
-	    }
+		for (Cards card : this.getHand()) {
+			if (card.getPoint() == playedCard.getPoint()
+					&& mostThrownCardsNumber[getHand().indexOf(card)] > howManyThrownCards
+					&& !card.getRank().equalsIgnoreCase("J") && (Game.getBoard().isEmpty() || !card.getRank()
+							.equalsIgnoreCase(Game.getBoard().get(Game.getBoard().size() - 1).getRank()))) {
+				howManyThrownCards = mostThrownCardsNumber[getHand().indexOf(card)];
+				mostThrownCard = card;
+			}
+		}
 
-	    return mostThrownCard;
+		return mostThrownCard;
 	}
-
 
 	private Cards getLowestMostPlayedCard(ArrayList<Cards> mostPlayedCards) {
 		int maxCardPoint = Integer.MAX_VALUE;
@@ -167,6 +173,7 @@ public final class ExpertBot extends BotPlayers {
 			}
 		}
 		return lowestMostPlayedCard;
+
 	}
 
 }

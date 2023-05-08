@@ -36,7 +36,10 @@ public class Cards {
 	}
 
 	public String toString() {
-		return suit + " " + rank + "(" + point + ")";
+		if (Game.isVerbosness())
+			return suit + " " + rank + "(" + point + ")";
+		else
+			return suit + " " + rank;
 
 	}
 

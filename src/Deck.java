@@ -68,7 +68,7 @@ public class Deck {
 				card.setPoint(defaultPoint);
 		}
 		for (Cards card : cards) {
-			System.out.println(card);
+			System.out.println(card + "(" + card.getPoint() + ")");
 		}
 	}
 

@@ -31,7 +31,7 @@ public final class HumanPlayer extends Player {
 		do {
 			try {
 				playerCardChoice = Integer.parseInt(scanner.nextLine());
-				if (!String.valueOf(playerCardChoice).matches("[1-4]"))
+				if ((playerCardChoice < 1) || (playerCardChoice > this.getHand().size()))
 					System.err.println("Please enter a valid value!");
 				else
 					validPlayerInput = true;

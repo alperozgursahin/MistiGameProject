@@ -11,28 +11,21 @@ public class Game implements Misti {
 	private boolean spectatorMode = false;
 	private boolean isValid = false;
 	private boolean gameOver;
+	private static boolean verbosness;
 	private static Player lastWinner;
 
 	private static BotPlayers[] botPlayers;
 
-	public static BotPlayers[] getBotPlayers() {
-		return botPlayers;
-	}
-
-	public static void setBotPlayers(BotPlayers[] botPlayers) {
-		Game.botPlayers = botPlayers;
-	}
-
 	private int maximumBotPlayerNumber = 3;
 	private int minimumBotPlayerNumber = 1;
-	private int botPlayerNumber;
-	private int playerNumber;
-	private int round;
+	private int botPlayerNumber, playerNumber, round;
 	private static int boardCardsSum;
 
 	public Game() {
 
 		startGame();
+		loopGame();
+		endGame();
 
 	}
 
@@ -49,12 +42,7 @@ public class Game implements Misti {
 		for (String harf : misti) {
 			System.out.println(harf.trim());
 		}
-
-		new Deck();
-		deck = Deck.getDeck();
-		Deck.shuffleDeck(deck);
-		Deck.cutDeck(deck);
-
+		deckOrganizer();
 		inputPlayers();
 
 		if (!gameOver) {
@@ -63,41 +51,49 @@ public class Game implements Misti {
 			round = roundNumberCalculator(playerNumber);
 			dealCardsToBoard();
 		}
-		int turn;
+
+	}
+
+	private void loopGame() {
 
 		while (!gameOver) {
+			checkBoardStatus();
 			while (round > 0) {
 				round--;
-				turn = 4;
 				dealCardsToPlayers();
-				while (turn > 0) {
-					turn--;
 
-					if (!spectatorMode) {
-						checkBoardStatus();
+				for (int i = 0; i < 4; i++) {
+					if (!spectatorMode)
 						humanPlayer.playCard();
-						botPlayerTurn();
-
-					} else {
-						checkBoardStatus();
-						botPlayerTurn();
-					}
+					botPlayerTurn();
 				}
 
 			}
-			addLastCardsToPlayer(lastWinner);
-			new Scoreboard(humanPlayer, botPlayers);
+
 		}
+
+	}
+
+	private void endGame() {
+		addLastCardsToPlayer(lastWinner);
+		new Scoreboard(humanPlayer, botPlayers);
 
 	}
 
 	private void addLastCardsToPlayer(Player lastWinner) {
 		if (!board.isEmpty()) {
-			System.out.println("Last Board Cards added to " + lastWinner.getName() + " Collected Cards.");
+			System.out.println("Last Board Cards added to " + lastWinner.getName() + "'s Collected Cards.");
 			lastWinner.getCollectedCards().addAll(board);
 			board.clear();
 		}
 
+	}
+
+	private void deckOrganizer() {
+		new Deck();
+		deck = Deck.getDeck();
+		Deck.shuffleDeck(deck);
+		Deck.cutDeck(deck);
 	}
 
 	private void botPlayerTurn() {
@@ -105,25 +101,30 @@ public class Game implements Misti {
 			getBotHand(botPlayer);
 			System.out.println();
 			compare(botPlayer.botPlayCard(), botPlayer);
-
+			checkBoardStatus();
 		}
 	}
 
 	private static void getBotHand(BotPlayers botPlayer) {
-		System.out.println(botPlayer.getName() + "'s cards are:");
+		if (verbosness) {
+			System.out.println(botPlayer.getName() + "'s cards are:");
 
-		for (int i = 0; i < botPlayer.getHand().size(); i++) {
-			System.out.print((i + 1) + ") " + botPlayer.getHand().get(i) + ", ");
+			for (int i = 0; i < botPlayer.getHand().size(); i++) {
+				System.out.print((i + 1) + ") " + botPlayer.getHand().get(i) + ", ");
+			}
+
+			System.out.println();
 		}
 
-		System.out.println();
 	}
 
 	protected static void compare(Cards playedCard, Player player) {
 		System.out.println(player.getName() + " is Playing: " + playedCard);
+		System.out.println();
 		System.out.println("\n---------------------------------------------------\n");
 		if (getBoard().size() != 1) {
 			if (playedCard.getRank().equalsIgnoreCase(getBoard().get(getBoard().size() - 2).getRank())) {
+				System.out.println();
 				System.out.println(player.getName() + " Collecting all cards on board...");
 				if (getBoard().size() == 2) {
 					System.out.println(
@@ -160,8 +161,11 @@ public class Game implements Misti {
 	public void inputPlayers() {
 
 		do {
-			System.out.println("What would you like to do?\nType:\n0 => PLAY\n1 => SPECTATE\n2 => EXIT");
+
+			System.out
+					.println("What would you like to do?\nType:\n0 => PLAY AS A HUMAN\n1 => SPECTATOR MODE\n2 => EXIT");
 			try {
+
 				int playChoice = Integer.parseInt(scanner.nextLine());
 				switch (playChoice) {
 				case 0:
@@ -189,7 +193,30 @@ public class Game implements Misti {
 				System.err.println("Please enter a valid value!");
 			}
 		} while (true);
+		verbosnessChecker();
+	}
 
+	private void verbosnessChecker() {
+		do {
+			System.out.println("Do you want to turn on the verbosness level ?\n1 => YES\n2 => NO");
+			try {
+				int verbosnessLevelChoice = Integer.parseInt(scanner.nextLine());
+				switch (verbosnessLevelChoice) {
+				case 1:
+					verbosness = true;
+					break;
+				case 2:
+					verbosness = false;
+					break;
+				default:
+					System.err.println("Please enter a valid value!");
+					continue;
+				}
+				break;
+			} catch (Exception e) {
+				System.err.println("Please enter a valid value!");
+			}
+		} while (true);
 	}
 
 	@Override
@@ -314,19 +341,17 @@ public class Game implements Misti {
 			gameOver = true;
 		System.out.println();
 		System.out.println("██████████████████████████  B O A R D  ██████████████████████████\n");
-
 		boardCardsSum = 0;
 		for (int i = 0; i < getBoard().size(); i++) {
 			System.out.print(getBoard().get(i) + ", ");
 			boardCardsSum += getBoard().get(i).getPoint();
 		}
-		System.out.println();
-		System.out.println();
+		if (verbosness)
+			System.out.println("\nBoard cards total point: " + boardCardsSum);
 
-		System.out.println("Board cards sum: " + boardCardsSum);
 		Cards lastCard = getBoard().isEmpty() ? null : getBoard().get(getBoard().size() - 1);
 		// System.out.println("Remained deck cards: " + deck.size());
-		System.out.println("The last board card is: " + lastCard + "\n");
+		System.out.println("\nThe last board card is: " + lastCard + "\n");
 		System.out.println("██████████████████████████████████████████████████████████████████\n");
 
 	}
@@ -366,4 +391,21 @@ public class Game implements Misti {
 	public void setLastWinner(Player lastWinner) {
 		Game.lastWinner = lastWinner;
 	}
+
+	public static BotPlayers[] getBotPlayers() {
+		return botPlayers;
+	}
+
+	public static void setBotPlayers(BotPlayers[] botPlayers) {
+		Game.botPlayers = botPlayers;
+	}
+
+	public static boolean isVerbosness() {
+		return verbosness;
+	}
+
+	public void setVerbosness(boolean verbosness) {
+		Game.verbosness = verbosness;
+	}
+
 }

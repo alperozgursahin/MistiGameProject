@@ -23,7 +23,7 @@ public final class RegularBot extends BotPlayers {
 						playedCard = this.getHand().get(i);
 						canTakeBoard = true;
 						boardCardsMaxPotentialPoint = playedCard.getPoint() + Game.getBoardCardsSum();
-						if (Game.getBoard().size() == 1) 
+						if (Game.getBoard().size() == 1)
 							canMakePisti = true;
 						continue;
 					}
