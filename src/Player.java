@@ -8,7 +8,6 @@ public class Player {
 	private ArrayList<Cards> collectedCards;
 	private int mistiNumber;
 	private int score;
-	private String type;
 	private int mistiScore;
 
 	public Player(String name) {
@@ -69,14 +68,6 @@ public class Player {
 
 	public void setScore(int score) {
 		this.score = score;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	public int getMistiScore() {

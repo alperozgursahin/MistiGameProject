@@ -4,7 +4,6 @@ public final class HumanPlayer extends Player {
 
 	public HumanPlayer() {
 		super(humanNameInput());
-		this.setType("HUMAN");
 	}
 
 	private static String humanNameInput() {

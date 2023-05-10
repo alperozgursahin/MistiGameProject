@@ -41,13 +41,10 @@ public class Deck {
 						String suitOrRank = parts[0];
 						int value = Integer.parseInt(parts[1].trim());
 						for (Cards card : cards) {
-							if (card.getSuit().equals(suitOrRank) && card.getPoint() == Integer.MAX_VALUE) {
-								card.setPoint(value);
-
-							} else if (card.getRank().equals(suitOrRank) && card.getPoint() == Integer.MAX_VALUE) {
+							if ((card.getSuit().equals(suitOrRank) || card.getRank().equals(suitOrRank))
+									&& card.getPoint() == Integer.MAX_VALUE) {
 								card.setPoint(value);
 							}
-
 						}
 					}
 

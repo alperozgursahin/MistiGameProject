@@ -16,14 +16,17 @@ public class Scoreboard {
 	public Scoreboard(HumanPlayer humanPlayer, BotPlayers[] botPlayers) {
 
 		scoreCalculator(humanPlayer, botPlayers);
-		writeScores();
+
 	}
 
 	private void scoreCalculator(HumanPlayer humanPlayer, BotPlayers[] botPlayers) {
-		System.out.println();
-		System.out.println("Scores are calculating..");
+
 		if (humanPlayer != null)
 			players.add(humanPlayer);
+		if (botPlayers == null)
+			return;
+		System.out.println();
+		System.out.println("Scores are calculating..");
 		for (BotPlayers botPlayer : botPlayers) {
 			players.add(botPlayer);
 		}
@@ -41,8 +44,8 @@ public class Scoreboard {
 		for (int i = 0; i < players.size(); i++) {
 
 			System.out
-					.println(players.get(i).getName() + " Score is: " + players.get(i).getScore() + " Pisti Number is: "
-							+ players.get(i).getMistiNumber() + " Pisti Score is : " + players.get(i).getMistiScore());
+					.println(players.get(i).getName() + " Score is: " + players.get(i).getScore() + " Misti Number is: "
+							+ players.get(i).getMistiNumber() + " Misti Score is : " + players.get(i).getMistiScore());
 
 		}
 		System.out.println("-----------------------------");
@@ -83,7 +86,7 @@ public class Scoreboard {
 				System.out.println("Could not create new file.");
 			}
 		}
-
+		writeScores();
 	}
 
 	private void writeScores() {

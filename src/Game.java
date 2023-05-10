@@ -11,7 +11,7 @@ public class Game implements Misti {
 	private boolean spectatorMode = false;
 	private boolean isValid = false;
 	private boolean gameOver;
-	private static boolean verbosness;
+	private static boolean verboseness;
 	private static Player lastWinner;
 
 	private static BotPlayers[] botPlayers;
@@ -75,6 +75,7 @@ public class Game implements Misti {
 	}
 
 	private void endGame() {
+		
 		addLastCardsToPlayer(lastWinner);
 		new Scoreboard(humanPlayer, botPlayers);
 
@@ -106,7 +107,7 @@ public class Game implements Misti {
 	}
 
 	private static void getBotHand(BotPlayers botPlayer) {
-		if (verbosness) {
+		if (verboseness) {
 			System.out.println(botPlayer.getName() + "'s cards are:");
 
 			for (int i = 0; i < botPlayer.getHand().size(); i++) {
@@ -128,7 +129,7 @@ public class Game implements Misti {
 				System.out.println(player.getName() + " Collecting all cards on board...");
 				if (getBoard().size() == 2) {
 					System.out.println(
-							player.getName() + " made a Pisti!\n---------------------------------------------------");
+							player.getName() + " made a Misti!\n---------------------------------------------------");
 					player.setMistiNumber(player.getMistiNumber() + 1);
 					player.setMistiScore(player.getMistiScore() + board.get(0).getPoint() + playedCard.getPoint());
 
@@ -193,20 +194,20 @@ public class Game implements Misti {
 				System.err.println("Please enter a valid value!");
 			}
 		} while (true);
-		verbosnessChecker();
+
 	}
 
-	private void verbosnessChecker() {
+	private void verbosenessChecker() {
 		do {
-			System.out.println("Do you want to turn on the verbosness level ?\n1 => YES\n2 => NO");
+			System.out.println("Do you want to turn on the verboseness level ?\n1 => YES\n2 => NO");
 			try {
 				int verbosnessLevelChoice = Integer.parseInt(scanner.nextLine());
 				switch (verbosnessLevelChoice) {
 				case 1:
-					verbosness = true;
+					verboseness = true;
 					break;
 				case 2:
-					verbosness = false;
+					verboseness = false;
 					break;
 				default:
 					System.err.println("Please enter a valid value!");
@@ -256,6 +257,8 @@ public class Game implements Misti {
 						} while (!checked);
 					}
 					implementBotNames();
+					verbosenessChecker();
+					
 				}
 
 			} catch (Exception e) {
@@ -346,7 +349,7 @@ public class Game implements Misti {
 			System.out.print(getBoard().get(i) + ", ");
 			boardCardsSum += getBoard().get(i).getPoint();
 		}
-		if (verbosness)
+		if (verboseness)
 			System.out.println("\nBoard cards total point: " + boardCardsSum);
 
 		Cards lastCard = getBoard().isEmpty() ? null : getBoard().get(getBoard().size() - 1);
@@ -401,11 +404,11 @@ public class Game implements Misti {
 	}
 
 	public static boolean isVerbosness() {
-		return verbosness;
+		return verboseness;
 	}
 
 	public void setVerbosness(boolean verbosness) {
-		Game.verbosness = verbosness;
+		Game.verboseness = verbosness;
 	}
 
 }
