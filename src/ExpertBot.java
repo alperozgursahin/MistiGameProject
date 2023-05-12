@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public final class ExpertBot extends BotPlayers {
 
@@ -19,39 +20,8 @@ public final class ExpertBot extends BotPlayers {
 		ArrayList<Cards> mostPlayedCards = new ArrayList<>();
 		int[] mostThrownCardsNumber = new int[this.getHand().size()];
 
-		// Checking collected cards from bots
-		for (int i = 0; i < this.getHand().size(); i++) {
-			for (BotPlayers botPlayer : Game.getBotPlayers()) {
-				for (int j = 0; j < botPlayer.getCollectedCards().size(); j++) {
-					if (this.getHand().get(i).getRank()
-							.equalsIgnoreCase(botPlayer.getCollectedCards().get(j).getRank()))
-						mostThrownCardsNumber[i]++;
+		checkCollectedCards(mostThrownCardsNumber);
 
-				}
-			}
-			// Checking Collected Cards From Human
-			if (Game.getHumanPlayer() != null) {
-				for (int j = 0; j < Game.getHumanPlayer().getCollectedCards().size(); j++) {
-					if (this.getHand().get(i).getRank()
-							.equalsIgnoreCase(Game.getHumanPlayer().getCollectedCards().get(j).getRank()))
-						mostThrownCardsNumber[i]++;
-
-				}
-
-			}
-			// Checking cards on the board
-			if (!(Game.getBoard().isEmpty())) {
-				for (int j = 0; j < Game.getBoard().size(); j++) {
-					if (this.getHand().get(i).getRank().equalsIgnoreCase(Game.getBoard().get(j).getRank()))
-						mostThrownCardsNumber[i]++;
-
-				}
-			}
-			if (Game.isVerbosness())
-				System.out.println(
-						this.getHand().get(i).toString() + " => Throwed " + mostThrownCardsNumber[i] + " Times");
-
-		}
 		System.out.println();
 
 		for (int i = 0; i < mostThrownCardsNumber.length; i++) {
@@ -174,6 +144,37 @@ public final class ExpertBot extends BotPlayers {
 		}
 		return lowestMostPlayedCard;
 
+	}
+
+	private void checkCollectedCards(int[] mostThrownCardsNumber) {
+		ArrayList<Player> players = new ArrayList<>();
+		players.addAll(Arrays.asList(Game.getBotPlayers()));
+		players.add(Game.getHumanPlayer());
+
+		for (int i = 0; i < this.getHand().size(); i++) {
+			for (Player player : players) {
+				if (player != null) {
+					for (Cards card : player.getCollectedCards()) {
+						if (this.getHand().get(i).getRank().equalsIgnoreCase(card.getRank())) {
+							mostThrownCardsNumber[i]++;
+						}
+					}
+				}
+			}
+
+			if (!Game.getBoard().isEmpty()) {
+				for (Cards card : Game.getBoard()) {
+					if (this.getHand().get(i).getRank().equalsIgnoreCase(card.getRank())) {
+						mostThrownCardsNumber[i]++;
+					}
+				}
+			}
+
+			if (Game.isVerbosness()) {
+				System.out.println(
+						this.getHand().get(i).toString() + " => Thrown " + mostThrownCardsNumber[i] + " Times");
+			}
+		}
 	}
 
 }
