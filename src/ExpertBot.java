@@ -168,7 +168,7 @@ public final class ExpertBot extends BotPlayers {
 				}
 			}
 
-			if (Game.isVerbosness()) {
+			if (Game.isVerboseness()) {
 				System.out.println(
 						this.getHand().get(i).toString() + " => Thrown " + mostThrownCardsNumber[i] + " Times");
 			}
