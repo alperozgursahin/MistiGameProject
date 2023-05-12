@@ -75,7 +75,7 @@ public class Game implements Misti {
 	}
 
 	private void endGame() {
-		
+
 		addLastCardsToPlayer(lastWinner);
 		new Scoreboard(humanPlayer, botPlayers);
 
@@ -258,7 +258,7 @@ public class Game implements Misti {
 					}
 					implementBotNames();
 					verbosenessChecker();
-					
+
 				}
 
 			} catch (Exception e) {
@@ -403,11 +403,11 @@ public class Game implements Misti {
 		Game.botPlayers = botPlayers;
 	}
 
-	public static boolean isVerbosness() {
+	public static boolean isVerboseness() {
 		return verboseness;
 	}
 
-	public void setVerbosness(boolean verbosness) {
+	public void setVerboseness(boolean verbosness) {
 		Game.verboseness = verbosness;
 	}
 

@@ -22,8 +22,6 @@ public final class ExpertBot extends BotPlayers {
 
 		checkCollectedCards(mostThrownCardsNumber);
 
-		System.out.println();
-
 		for (int i = 0; i < mostThrownCardsNumber.length; i++) {
 			if (mostThrownCardsNumber[i] == 3) {
 				playedCard = this.getHand().get(i);
@@ -175,6 +173,8 @@ public final class ExpertBot extends BotPlayers {
 						this.getHand().get(i).toString() + " => Thrown " + mostThrownCardsNumber[i] + " Times");
 			}
 		}
+
+		System.out.println();
 	}
 
 }
